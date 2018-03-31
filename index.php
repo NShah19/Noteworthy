@@ -1,1 +1,1 @@
-<?php header( 'Location: ./lahacksapp/build/index.html' ) ;  ?>
+<?php include './lahacksapp/build/index.html'; ?>
