@@ -76,7 +76,6 @@ NoteWorthy helps you save time by indexing and auto-marking your notes!
 
 class PageLayout extends Component {
 
-
     render(){
         return ( <div>
         <Menu fixed='top' inverted>
@@ -89,10 +88,8 @@ class PageLayout extends Component {
               />
               NoteWorthy
             </Menu.Item>
-            <Menu.Item as='a' href='#'><Link to="/">Home</Link></Menu.Item>
-            <Menu.Item as='a' href='#'><Link to="/editor">New Note</Link></Menu.Item>
-
-
+            <Menu.Item><Link to="/">Home</Link></Menu.Item>
+            <Menu.Item ><Link to="/editor">New Note</Link></Menu.Item>
           </Container>
         </Menu>
 
@@ -141,25 +138,11 @@ class Intro extends Component {
 class Editor extends Component {
     render(){
         return  (
-             <Container text style={{ marginTop: '7em' }}>
-         <iframe width='100%' height='500px' title="editor" src="./firepad/examples/richtext.html"></iframe>
+             <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
+         <iframe align="center" frameborder="0" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
         </Container>
             );
     }
-}
-
-class Notes extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Notes Section</h1>
-        </header>
-        <iframe width='80%' height='500px' title="try0" src="./firepad/examples/richtext.html"></iframe>
-      </div>
-    );
-  }
 }
 
 class App extends React.Component {

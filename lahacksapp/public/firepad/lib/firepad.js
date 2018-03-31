@@ -2477,6 +2477,8 @@ firepad.ACEAdapter = (function() {
     return this.aceSession.selection.removeListener('changeCursor', this.onCursorActivity);
   };
 
+
+
   ACEAdapter.prototype.onChange = function(change) {
     var pair;
     if (!this.ignoreChanges) {
@@ -5671,6 +5673,20 @@ firepad.Firepad = (function(global) {
   };
 
   Firepad.prototype.newline = function() {
+    console.log("here newline");
+    let elements = this.getText();
+    console.log(elements);
+    let url = "https://lahacks2018-199705.appspot.com/index";
+   /* MYTODO
+   $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(elements),
+        contentType: 'application/json',
+        success: function(data) {
+            console.log(data);
+        }
+    })*/
     this.richTextCodeMirror_.newline();
   };
 
@@ -5793,6 +5809,7 @@ firepad.Firepad = (function(global) {
     var poweredBy = utils.elt('a', null, { 'class': 'powered-by-firepad'} );
     this.firepadWrapper_.appendChild(poweredBy)
   };
+
 
   Firepad.prototype.initializeKeyMap_ = function() {
     function binder(fn) {
