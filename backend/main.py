@@ -45,7 +45,8 @@ def test_doc():
     doc_id = request.args.get('id')
     index.test(doc_id)
     
-    return "TEST SUCCESSFUL"
+    return "TEST PASSED"
+    # return keywords.test_sent()
 
 @app.errorhandler(500)
 def server_error(e):
