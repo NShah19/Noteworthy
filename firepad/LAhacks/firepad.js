@@ -2778,6 +2778,25 @@ firepad.EntityManager = (function () {
         return info;
       }
     });
+
+    this.register('file', {
+      render: function(info) {
+        utils.assert(info.src, "image entity should have 'src'!");
+        var attrs = [];
+        var html = '<img type="file">';
+        return html;
+      },
+      fromElement: function(element) {
+        var info = {};
+        for(var i = 0; i < attrs.length; i++) {
+          var attr = attrs[i];
+          if (element.hasAttribute(attr)) {
+            info[attr] = element.getAttribute(attr);
+          }
+        }
+        return info;
+      }
+    });
   }
 
   EntityManager.prototype.register = function(type, options) {
@@ -5726,8 +5745,50 @@ firepad.Firepad = (function(global) {
   };
 
   Firepad.prototype.makeImageDialog_ = function() {
+
     this.makeDialog_('img', 'Insert image url');
   };
+
+
+Firepad.prototype.makeImageUpload_ = function(id, placeholder) {
+    this.makeDialog2_('file', 'Upload file');
+   };
+
+
+ Firepad.prototype.makeDialog2_ = function(id, placeholder) {
+   var self = this;
+
+   var hideDialog = function() {
+     var dialog = document.getElementById('overlay');
+     dialog.style.visibility = "hidden";
+     self.firepadWrapper_.removeChild(dialog);
+   };
+
+   var cb = function() {
+     var dialog = document.getElementById('overlay');
+     dialog.style.visibility = "hidden";
+     var src = document.getElementById(id).value;
+     if (src !== null)
+       self.insertEntity(id, { 'src': src });
+     self.firepadWrapper_.removeChild(dialog);
+   };
+
+   var input = utils.elt('input', null, { 'class':'firepad-dialog-input', 'id':id, 'type':'file', "accept"="image/*", 'placeholder':placeholder, 'autofocus':'autofocus' });
+
+   var submit = utils.elt('a', 'Submit', { 'class': 'firepad-btn', 'id':'submitbtn' });
+   utils.on(submit, 'click', utils.stopEventAnd(cb));
+
+   var cancel = utils.elt('a', 'Cancel', { 'class': 'firepad-btn' });
+   utils.on(cancel, 'click', utils.stopEventAnd(hideDialog));
+
+   var buttonsdiv = utils.elt('div', [submit, cancel], { 'class':'firepad-btn-group' });
+
+   var div = utils.elt('div', [input, buttonsdiv], { 'class':'firepad-dialog-div' });
+   var dialog = utils.elt('div', [div], { 'class': 'firepad-dialog', id:'overlay' });
+
+   this.firepadWrapper_.appendChild(dialog);
+  };
+
 
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
    var self = this;
@@ -5784,7 +5845,7 @@ firepad.Firepad = (function(global) {
     this.toolbar.on('indent-increase', this.indent, this);
     this.toolbar.on('indent-decrease', this.unindent, this);
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
-    this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
+    this.toolbar.on('insert-translate-image', this.makeImageUpload_, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
