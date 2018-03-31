@@ -1,1 +1,0 @@
-<?php include './lahacksapp/build/index.html'; ?>
