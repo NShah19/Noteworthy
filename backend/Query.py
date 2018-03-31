@@ -1,6 +1,6 @@
 import re
 import csv
-from google.appengine.api import search
+#from google.appengine.api import search
 
 
 THRESHOLD = 0
@@ -8,7 +8,7 @@ STOPWORDS = []
 with open("Stopwords.csv", "rb") as f:
     reader = csv.reader(f)
     STOPWORDS = list(reader)
-STOPWORDS = set(STOPWORDS)
+STOPWORDS = set([s[0] for s in STOPWORDS])
 
 
 def get_text_for_queries(tokens, queries):
@@ -17,8 +17,9 @@ def get_text_for_queries(tokens, queries):
     queries_with_text = []
     for start,end in queries:
         query_raw_text = tokens[start:end]
-        query_filtered_text = [word for word in query_raw_text if word.lower() not in STOPWORDS]
-        queries_with_text.append((" ".join(query_filtered_text), start, end))
+        query_filtered_text = " ".join([word for word in query_raw_text if word.lower() not in STOPWORDS])
+        if query_filtered_text.strip():
+            queries_with_text.append((query_filtered_text, start, end))
     return queries_with_text
 
 def generate_queries_for_line(line):
@@ -31,7 +32,7 @@ def generate_queries_for_line(line):
             for j in range(i-1):
                 queries.append((j,i))
         return get_text_for_queries(tokens, queries)
-    queries = [(0,1), (1,2), (0,2), (2,3), (1,3), (0,3), (3,4), (2,4) (1,4), (0,4)] # Assumes line has more than 5 tokens at this point
+    queries = [(0,1), (1,2), (0,2), (2,3), (1,3), (0,3), (3,4), (2,4), (1,4), (0,4)] # Assumes line has more than 5 tokens at this point
     for i in range(5, len(tokens)): #i keeps track of end of sliding window
         for j in range(i-5, i): #j keeps track of start of sliding window
             queries.append((j, i))
@@ -61,7 +62,7 @@ def search_line(line, index):
             if i > 3:
                 break
             associated_docs.append(doc)
-            i++
+            i += 1
         doc_scores = [doc.sort_scores[0] for doc in associated_docs]
         avg_score = sum(doc_scores)/ float(len(doc_scores))
         good_doc_ids = [doc.doc_id for doc in associated_docs]
@@ -83,7 +84,7 @@ def search_line(line, index):
         if i > 3:
             break
         associated_docs.append(doc)
-        i++
+        i += 1
     doc_scores = [doc.sort_scores[0] for doc in associated_docs]
     avg_score = sum(doc_scores)/ float(len(doc_scores))
     ids_and_blurbs = []
