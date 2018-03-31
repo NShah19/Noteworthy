@@ -5,6 +5,7 @@ from flask import Flask, render_template, request
 from google.appengine.api import search
 
 from index import Index
+# import keywords
 # [END imports]
 
 # [START create_app]

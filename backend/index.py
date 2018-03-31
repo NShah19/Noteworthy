@@ -9,6 +9,7 @@ class Index(object):
         document = search.Document(
             doc_id = doc_id,
             fields = [
+                search.TextField(name='doc_id_text', value = doc_id),
                 search.TextField(name='doc_name', value = doc_name),
                 search.TextField(name='doc_text', value = doc_text)
             ])
