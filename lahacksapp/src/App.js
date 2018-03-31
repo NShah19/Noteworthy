@@ -119,7 +119,6 @@ class PageLayout extends Component {
 }
 
 
-
 class Editor extends Component {
     render(){
         return  (

@@ -5695,8 +5695,8 @@ firepad.Firepad = (function(global) {
 
   Firepad.prototype.newline = function() {
     console.log("here in newline");
-    let elements = this.getText();
-    console.log(elements);
+    let text = this.getText();
+    console.log(text);
     var ref = this.getExampleRef();
     var date = new Date();
     console.log(ref);
@@ -5715,11 +5715,57 @@ firepad.Firepad = (function(global) {
     });
     console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
+
+    /*var counter = 0;
+    for(var i = text.length - 2; i >= 0; i--){
+        if(text[i] === "/n")
+            break;
+        counter++;
+    }
+    var line = text.substring(text.length - counter);
+
+    console.log("Line is "+line);
+     */
+    console.log("ref key "+ref.key);
+
+    var data = {
+       doc_name: title,
+        doc_text: text,
+        doc_id: ref.key,
+        doc_date: date
+    };
+    console.log(JSON.stringify(data));
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+        /*   let response = dataRes;
+        var parsedJSON = JSON.parse(response);
+        var startIndex = parsedJSON.startIndex;
+        var endIndex = parsedJSON.endIndex;
+        var IDList = parsedJSON.ids_and_blurbs;
+
+        // call highlightText(start, end)
+
+        for (var i =0; i < IDList.length; i++){
+            var ID = IDList[i].id;
+            var blurb = IDList[i].blurb;
+            // call function to make annotation
+        }*/
+        }
+    })
+
+
    /* MYTODO
    $.ajax({
         type: "POST",
         url: url,
-        data: JSON.stringify(elements),
+        data: JSON.stringify(text),
         contentType: 'application/json',
         success: function(data) {
             console.log(data);
