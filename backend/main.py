@@ -2,11 +2,16 @@
 # [START imports]
 import logging
 from flask import Flask, render_template, request
+from google.appengine.api import search
+
+from index import Index
 # [END imports]
 
 # [START create_app]
 app = Flask(__name__)
 # [END create_app]
+
+index = Index()
 
 @app.route('/')
 def root():
@@ -15,15 +20,31 @@ def root():
 """
 JSON structure
 {
-    "name": "NAME",
+    "doc_name": "NAME",
     "doc_id": "ID",
-    "date": "date-string",
-    "full_text": "LONG TEXT"
+    "doc_date": "date-string",
+    "doc_text": "LONG TEXT"
 }
 """
 @app.route('/index', methods=["POST"])
 def index_doc():
-    pass
+    global index
+
+    content = request.get_json()
+    print(content)
+
+    index.insert_document(content['doc_id'], content['doc_name'], 
+            content['doc_date'], content['doc_text'])
+    return "JSON PARSED"
+
+@app.route('/test', methods=["GET"])
+def test_doc():
+    global index
+
+    doc_id = request.args.get('id')
+    index.test(doc_id)
+    
+    return "TEST SUCCESSFUL"
 
 @app.errorhandler(500)
 def server_error(e):
