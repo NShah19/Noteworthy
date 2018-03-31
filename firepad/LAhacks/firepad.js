@@ -5725,6 +5725,7 @@ firepad.Firepad = (function(global) {
     }
   };
 
+
   Firepad.prototype.makeImageDialog_ = function() {
     this.makeDialog_('img', 'Insert image url');
   };

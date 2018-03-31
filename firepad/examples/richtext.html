@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="../LAhacks/firepad.css" />
   <script src="../LAhacks/firepad.js"></script>
 
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
   <style>
     html { height: 100%; }
     body { margin: 0; height: 100%; position: relative; }
@@ -54,7 +58,7 @@
       var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
           { richTextToolbar: true, richTextShortcuts: true });
 
-      //// Initialize contents.
+      /*//// Initialize contents.
       firepad.on('ready', function() {
         if (firepad.isHistoryEmpty()) {
           firepad.setHtml(
@@ -85,6 +89,23 @@
                 '<li>And it\'s all fully collaborative!</li>' +
               '</ul>' +
               '</div>');
+        }
+      });*/
+
+      //Sync function
+      firepad.on('synced', function(isSynced) {
+        if(isSynced){
+          var elements = firepad.getText();
+          var url = "https://lahacks2018-199705.appspot.com/index" 
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify(elements),
+            contentType: 'application/json',
+            success: function(data){
+              console.log(data);
+            }
+          })
         }
       });
 
