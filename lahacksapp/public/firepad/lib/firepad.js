@@ -5716,20 +5716,20 @@ firepad.Firepad = (function(global) {
     console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
 
-    /*var counter = 0;
+    var counter = 0;
     for(var i = text.length - 2; i >= 0; i--){
         if(text[i] === "/n")
             break;
         counter++;
     }
-    var line = text.substring(text.length - counter);
+    var line = text.substring(text.length - counter - 1);
 
-    console.log("Line is "+line);
-     */
+    console.log("Line is "+ line);
+     
     console.log("ref key "+ref.key);
 
     var data = {
-       doc_name: title,
+        doc_name: title,
         doc_text: text,
         doc_id: ref.key,
         doc_date: date
