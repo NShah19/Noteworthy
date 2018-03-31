@@ -33,7 +33,6 @@
 
 <body onload="init()">
   <div id="firepad-container"></div>
-
   <script>
     function init() {
       //// Initialize Firebase.
@@ -93,7 +92,7 @@
       });*/
 
       //Sync function
-      firepad.on('synced', function(isSynced) {
+      /*firepad.on('synced', function(isSynced) {
         if(isSynced){
           var elements = firepad.getText();
           var url = "https://lahacks2018-199705.appspot.com/index" 
@@ -107,7 +106,22 @@
             }
           })
         }
-      });
+      });*/
+
+      //button on press function
+      function buttonPress() {
+        var elements = firepad.getText();
+        var url = "https://lahacks2018-199705.appspot.com/index" 
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify(elements),
+            contentType: 'application/json',
+            success: function(data){
+              console.log(data);
+            }
+          })
+      }
 
       // An example of a complex custom entity.
       firepad.registerEntity('checkbox', {
