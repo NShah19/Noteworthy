@@ -1,6 +1,6 @@
 import re
 import csv
-#from google.appengine.api import search
+from google.appengine.api import search
 
 
 THRESHOLD = 0
@@ -47,46 +47,48 @@ def search_line(line, index):
     query_results = []
     #For each query Make Query and Save Results
     for query_text,start,end in queries_with_text:
-        query = search.Query(query_string=query_text.split(), options=query_opts)
-        search_results = None
+        query = search.Query(query_string=query_text.strip(), options=query_opts)
+        search_results = "HOHOHOHOHO"
         try:
             search_results = index.search(query)
         except search.Error:
             return None
         num_found = search_results.number_found
-        num_returned = len(search_results)
+        num_returned = len(search_results.results)
         assert num_found == num_returned, "Too many documents"
         i = 0
         associated_docs = []
-        for doc in reversed(search_results): # Gets 4 highest matching docs? for this query
+        for doc in reversed(search_results.results): # Gets 4 highest matching docs? for this query
             if i > 3:
                 break
             associated_docs.append(doc)
             i += 1
         doc_scores = [doc.sort_scores[0] for doc in associated_docs]
-        avg_score = sum(doc_scores)/ float(len(doc_scores))
+        avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else 0
         good_doc_ids = [doc.doc_id for doc in associated_docs]
         query_results.append((avg_score, good_doc_ids, query_text, start, end)) # HOW TO RETREIVE SCORES USED FOR SORTING? NEED THEM TO DETERMINE BEST QUERY
     #Choose best query
     best_query = max(query_results, key=lambda x: x[0])
     #Make another query for this query, saving the snippet from each text_field
-    final_query = search.Query(query_string=best_query[2].split(), options=search.QueryOptions(sort_options=sort_opts, returned_fields=[docs.notes.doc_id_text], snippeted_fields=[docs.note.doc_text]))
+    final_query = search.Query(query_string=best_query[2].strip(),
+            options=search.QueryOptions(sort_options=sort_opts,
+                returned_fields=["doc_id_text"], snippeted_fields=["doc_text"]))
     #Get doc ID's, snippets, and start/stop num and return them
     #CAN ALSO DO ALL OF THE BELOW BY SIMPLY ADDING SNIPPET FIELD TO ORIGINLA QUERIES?
     best_result = None
     try:
-        best_results = index.search(best_query)
+        best_results = index.search(final_query)
     except search.Error:
         return None
     i = 0
     associated_docs = []
-    for doc in reversed(best_results): # Gets 4 highest matching docs? for this query
+    for doc in reversed(best_results.results): # Gets 4 highest matching docs? for this query
         if i > 3:
             break
         associated_docs.append(doc)
         i += 1
     doc_scores = [doc.sort_scores[0] for doc in associated_docs]
-    avg_score = sum(doc_scores)/ float(len(doc_scores))
+    avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else 0
     ids_and_blurbs = []
     for doc in associated_docs:
         for expr in doc.expressions:
