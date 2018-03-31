@@ -5,6 +5,7 @@ from flask import Flask, render_template, request
 from google.appengine.api import search
 
 from index import Index
+# import keywords
 # [END imports]
 
 # [START create_app]
@@ -44,7 +45,8 @@ def test_doc():
     doc_id = request.args.get('id')
     index.test(doc_id)
     
-    return "TEST SUCCESSFUL"
+    return "TEST PASSED"
+    # return keywords.test_sent()
 
 @app.errorhandler(500)
 def server_error(e):
