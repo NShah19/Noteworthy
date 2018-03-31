@@ -119,27 +119,12 @@ class PageLayout extends Component {
 }
 
 
-class Intro extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to Intro</h1>
-        </header>
-        <p className="App-intro">
-          About notes blah blah.
-        </p>
-      </div>
-    );
-  }
-}
 
 class Editor extends Component {
     render(){
         return  (
              <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
-         <iframe align="center" frameborder="0" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
+         <iframe align="center" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
         </Container>
             );
     }

@@ -5672,10 +5672,48 @@ firepad.Firepad = (function(global) {
     this.codeMirror_.focus();
   };
 
+
+  Firepad.prototype.getExampleRef = function() {
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+        var ref = firebase.database().ref();
+        var hash = window.location.hash.replace(/#/g, '');
+        if (hash) {
+            ref = ref.child(hash);
+        } else {
+            ref = ref.push(); // generate unique location.
+            window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+        }
+        if (typeof console !== 'undefined') {
+            console.log('Firebase data: ', ref.toString());
+        }
+        console.log(ref.key);
+        return ref;
+    }
+
   Firepad.prototype.newline = function() {
-    console.log("here newline");
+    console.log("here in newline");
     let elements = this.getText();
     console.log(elements);
+    var ref = this.getExampleRef();
+    var date = new Date();
+    console.log(ref);
+    console.log(date);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let nameInput = document.getElementById('namefield');
+    let title = nameInput.value;
+    console.log("Title "+title);
+
+    firebase.database().ref().child(ref.key + '/metadata').set({
+        name: title,
+        date: date.toDateString(),
+    });
+    console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
    /* MYTODO
    $.ajax({
