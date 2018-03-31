@@ -91,8 +91,6 @@ class PageLayout extends Component {
             </Menu.Item>
             <Menu.Item as='a' href='#'><Link to="/">Home</Link></Menu.Item>
             <Menu.Item as='a' href='#'><Link to="/editor">New Note</Link></Menu.Item>
-
-
           </Container>
         </Menu>
 
