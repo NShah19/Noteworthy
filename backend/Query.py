@@ -62,13 +62,36 @@ def search_line(line, index):
                 break
             associated_docs.append(doc)
             i++
-        doc_scores = [doc.sort_scores for doc in associated_docs]
+        doc_scores = [doc.sort_scores[0] for doc in associated_docs]
         avg_score = sum(doc_scores)/ float(len(doc_scores))
         good_doc_ids = [doc.doc_id for doc in associated_docs]
         query_results.append((avg_score, good_doc_ids, query_text, start, end)) # HOW TO RETREIVE SCORES USED FOR SORTING? NEED THEM TO DETERMINE BEST QUERY
     #Choose best query
     best_query = max(query_results, key=lambda x: x[0])
     #Make another query for this query, saving the snippet from each text_field
-    final_query = search.Query(query_string=best_query[2].split(), options=search.QueryOptions(sort_options=sort_opts, snippeted_fields=[docs.note.full_text]))
+    final_query = search.Query(query_string=best_query[2].split(), options=search.QueryOptions(sort_options=sort_opts, returned_fields=[docs.notes.doc_id_text], snippeted_fields=[docs.note.doc_text]))
     #Get doc ID's, snippets, and start/stop num and return them
-    return None
+    #CAN ALSO DO ALL OF THE BELOW BY SIMPLY ADDING SNIPPET FIELD TO ORIGINLA QUERIES?
+    best_result = None
+    try:
+        best_results = index.search(best_query)
+    except search.Error:
+        return None
+    i = 0
+    associated_docs = []
+    for doc in reversed(best_results): # Gets 4 highest matching docs? for this query
+        if i > 3:
+            break
+        associated_docs.append(doc)
+        i++
+    doc_scores = [doc.sort_scores[0] for doc in associated_docs]
+    avg_score = sum(doc_scores)/ float(len(doc_scores))
+    ids_and_blurbs = []
+    for doc in associated_docs:
+        for expr in doc.expressions:
+            if expr.name == docs.notes.doc_text:
+                description_snippet = expr.value
+                ids_and_blurbs.append((doc.doc_id, description_snippet))
+                break
+    final_ret_val = [avg_score, ids_and_blurbs, best_query[3], best_query[4]]#still need to add KhanAcademy here
+    return final_ret_val
