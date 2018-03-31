@@ -26,8 +26,7 @@ class Index(object):
 
     def search(self, query):
         documents = self.index.search(query)
-        for document in documents:
-            print(document)
+        return documents
 
     def test(self, doc_id):
         print(search.get_indexes())

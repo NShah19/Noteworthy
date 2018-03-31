@@ -1,11 +1,14 @@
 # [START app]
 # [START imports]
 import logging
-from flask import Flask, render_template, request
+import json
+from flask import Flask, render_template, request, jsonify
 from google.appengine.api import search
 
 from index import Index
-# import keywords
+from Query import *
+
+import keywords
 # [END imports]
 
 # [START create_app]
@@ -38,6 +41,16 @@ def index_doc():
             content['doc_date'], content['doc_text'])
     return "JSON PARSED"
 
+# Each query is one line
+@app.route('/query', methods=["POST"])
+def query():
+    global index
+    line = request.get_json()['line']
+    print(line, type(line))
+
+    annotation = search_line(line, index)
+    return jsonify(annotation = annotation)
+
 @app.route('/test', methods=["GET"])
 def test_doc():
     global index
@@ -47,6 +60,18 @@ def test_doc():
     
     return "TEST PASSED"
     # return keywords.test_sent()
+
+@app.route('/setup', methods=["GET"])
+def setup():
+    global index
+
+    with open('test.json', 'r') as f:
+        data = json.load(f)
+
+    for doc in data["docs"]:
+        index.insert_document(doc['doc_id'], doc['doc_name'], doc['doc_date'],
+                doc['doc_text'])
+    return "SETUP COMPLETE"
 
 @app.errorhandler(500)
 def server_error(e):
