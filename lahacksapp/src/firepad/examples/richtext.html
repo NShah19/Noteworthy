@@ -40,24 +40,35 @@
         <input id="namefield" type="text" font-size="150px" name="docname" placeholder="Untitled">
         <script>
             var nameInput = document.getElementById('namefield');
-            if (nameInput.valueOf() != "") {
+            if (nameInput.value != null) {
                 function retrieve() {
-                    var text = localStorage.getItem("text"); // retrieve
+                    var meta = localStorage.getItem("meta"); // retrieve
+                    if(meta.valueOf() == getExampleRef()){
+
+                    }
                     document.getElementById('namefield').innerHTML = text; // display
+                    return text;
                 }
             }
-            nameInput.addEventListener("keydown", function() {
+            nameInput.addEventListener("keydown", function(e) {
                 if (e.keyCode === 13) { //checks whether the pressed key is "Enter"
-                    save();
+                    var ref = getExampleRef();
+                    writeTitleData();
+                    //save();
                 }
             });
 
             function save() {
-                var text_to_save = nameInput.value;
-                localStorage.setItem("text", text_to_save); // save the item
+                var meta = {"ID" : getExampleRef(), "text" : nameInput.value};
+                localStorage.setItem("meta", JSON.stringify(meta)); // save the item
+                return meta;
             }
+            //console.log(meta);
+            //STORE ON TEXTFILE OR SOMETHING
+            
         </script>
     </div>
+
   <div id="firepad-container"></div>
   <script>
     function init() {
@@ -237,8 +248,24 @@
             if (typeof console !== 'undefined') {
                 console.log('Firebase data: ', ref.toString());
             }
+            console.log(ref.key);
             return ref;
         }
+        
+        function writeTitleData(title, id) {
+            var ref = getExampleRef();
+            console.log(ref.key)
+            var history = firebase.database().ref('history/')
+            var user = firebase.database().ref('user/')
+            console.log(history)
+            var date = new Date();
+            firebase.database().ref().child(ref.key+'/metadata').set({
+                name: 'doc1',
+                date: date.toDateString(),
+            });
+            console.log('working kinda')
+        }
+
     </script>
 </body>
 
