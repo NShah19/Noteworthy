@@ -40,7 +40,6 @@ def generate_queries_for_line(line):
 
 def search_line(line, index):
     queries_with_text = generate_queries_for_line(line)
-    print(queries_with_text)
     #Generate SOrt Options Object
     sort_opts = search.SortOptions(match_scorer=search.MatchScorer())
     #Generate Query Options Object (including returned_fields)
@@ -69,7 +68,6 @@ def search_line(line, index):
         good_doc_ids = [doc.doc_id for doc in associated_docs]
         query_results.append((avg_score, good_doc_ids, query_text, start, end)) # HOW TO RETREIVE SCORES USED FOR SORTING? NEED THEM TO DETERMINE BEST QUERY
     #Choose best query
-    print(query_results)
     best_query = max(query_results, key=lambda x: x[0])
     #Make another query for this query, saving the snippet from each text_field
     final_query = search.Query(query_string=best_query[2].strip(),

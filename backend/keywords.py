@@ -1,19 +1,19 @@
 # Imports the Google Cloud client library
-from google.cloud import language
-from google.cloud.language import enums
-from google.cloud.language import types
+# from google.cloud import language
+# from google.cloud.language import enums
+# from google.cloud.language import types
 
-def test_sent():
-    # Instantiates a client
-    client = language.LanguageServiceClient()
+# def test_sent():
+#     # Instantiates a client
+#     client = language.LanguageServiceClient()
 
-    # The text to analyze
-    text = u'Hello, world!'
-    document = types.Document(
-                content=text,
-                    type=enums.Document.Type.PLAIN_TEXT)
+#     # The text to analyze
+#     text = u'Hello, world!'
+#     document = types.Document(
+#                 content=text,
+#                     type=enums.Document.Type.PLAIN_TEXT)
 
-    # Detects the sentiment of the text
-    sentiment = client.analyze_sentiment(document=document).document_sentiment
+#     # Detects the sentiment of the text
+#     sentiment = client.analyze_sentiment(document=document).document_sentiment
 
-    print ('Sentiment: {}, {}'.format(sentiment.score, sentiment.magnitude))
+#     return 'Sentiment: {}, {}'.format(sentiment.score, sentiment.magnitude)
