@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.css" />
 
     <!-- Firepad -->
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../lib/firepad.css" />
     <script src="../lib/firepad.js"></script>
 
@@ -131,12 +135,6 @@
 
             //button on press function
             function buttonPress() {
-                var pad = document.getElementById("firepad");
-                firepad.addEventListener("keydown", function(e) {
-                    if (e.keycode === "13") {
-                        console.log("enter pressed")
-                    }
-                })
                 var elements = firepad.getText();
                 var url = "https://lahacks2018-199705.appspot.com/index"
                 $.ajax({
