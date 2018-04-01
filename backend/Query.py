@@ -39,11 +39,13 @@ def generate_queries_for_line(line):
     return get_text_for_queries(tokens, queries)
 
 def search_line(line, index):
+    line = line + " I"
     queries_with_text = generate_queries_for_line(line)
     #Generate SOrt Options Object
     sort_opts = search.SortOptions(match_scorer=search.MatchScorer())
+    relevance_field_expr = search.FieldExpression(name="relevance_score", expression="_score")
     #Generate Query Options Object (including returned_fields)
-    query_opts = search.QueryOptions(sort_options=sort_opts, ids_only=True)
+    query_opts = search.QueryOptions(sort_options=sort_opts, returned_fields=["doc_id_text"], returned_expressions=[relevance_field_expr])
     query_results = []
     #For each query Make Query and Save Results
     for query_text,start,end in queries_with_text:
@@ -58,16 +60,22 @@ def search_line(line, index):
         assert num_found == num_returned, "Too many documents"
         i = 0
         associated_docs = []
+        doc_scores = []
         for doc in reversed(search_results.results): # Gets 4 highest matching docs? for this query
             if i > 3:
                 break
             associated_docs.append(doc)
+            for expr in doc.expressions:
+                if expr.name == "relevance_score":
+                    doc_scores.append(expr.value)
+                    break
             i += 1
-        doc_scores = [doc.sort_scores[0] for doc in associated_docs]
-        avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else 0
+#        doc_scores = [doc.sort_scores[0] for doc in associated_docs]
+        avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else -9999999
         good_doc_ids = [doc.doc_id for doc in associated_docs]
         query_results.append((avg_score, good_doc_ids, query_text, start, end)) # HOW TO RETREIVE SCORES USED FOR SORTING? NEED THEM TO DETERMINE BEST QUERY
     #Choose best query
+    print(query_results)
     best_query = max(query_results, key=lambda x: x[0])
     #Make another query for this query, saving the snippet from each text_field
     final_query = search.Query(query_string=best_query[2].strip(),
@@ -92,9 +100,9 @@ def search_line(line, index):
     ids_and_blurbs = []
     for doc in associated_docs:
         for expr in doc.expressions:
-            if expr.name == docs.notes.doc_text:
+            if expr.name == "doc_text":
                 description_snippet = expr.value
                 ids_and_blurbs.append((doc.doc_id, description_snippet))
                 break
-    final_ret_val = [avg_score, ids_and_blurbs, best_query[3], best_query[4]]#still need to add KhanAcademy here
+    final_ret_val = [avg_score, ids_and_blurbs, best_query[3], best_query[4]] #still need to add KhanAcademy here
     return final_ret_val

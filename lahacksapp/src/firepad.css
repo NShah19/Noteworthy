@@ -449,14 +449,15 @@ a.firepad-btn:active {
     content: "\e015";
 }
 
-.firepad-tb-bubble:before {
-    content: "\e00f";
-}
-
 .firepad-tb-insert-translate-image:before {
     content: "\e015";
 }
 
 .firepad-tb-save:before {
-    content: "\e015";
+    content: "url('http://testcreative.co.uk/');";
+}
+
+
+.firepad-tb-bubble:before {
+    content: "\e00f";
 }

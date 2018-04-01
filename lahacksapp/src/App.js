@@ -66,7 +66,6 @@ Notebook apps come in all shapes and sizes. From simple plain-text notebooks to 
 NoteWorthy helps you save time by indexing and auto-marking your notes!
 </p>
 
-
   </Container>
 
       );
