@@ -1,0 +1,1 @@
+(Most of us) take notes on lectures, workshops, and the like. But we realized we almost never use our notes to study and that it's easy to get lost taking notes in a class you're behind in. So we decided to make an intelligent not-taking platform that annotates you notes for you on the go, making it easier to take notes and use them to study.
