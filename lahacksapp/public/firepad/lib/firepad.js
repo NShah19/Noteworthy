@@ -5789,10 +5789,9 @@ firepad.Firepad = (function(global) {
             console.log("Success");
             console.log(dataRes);
             if(Object.keys(dataRes).length != 0){
-              let parsedJSON = dataRes;
-              let startIndex = parsedJSON.startIndex;
-              let endIndex = parsedJSON.endIndex;
-              let IDList = parsedJSON.ids_and_blurbs;
+              let startIndex = dataRes.startIndex;
+              let endIndex = dataRes.endIndex;
+              let IDList = dataRes.ids_and_blurbs;
 
               // call highlightText(start, end)
               console.log("list" + IDList);
