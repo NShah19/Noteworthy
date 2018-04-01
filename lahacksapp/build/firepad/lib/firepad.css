@@ -1,8 +1,37 @@
+#flexer{
+    display: flex;
+    justify-content: space-around;
+    align-items:flex-start;
+    width:100%;
+    margin:auto;
+}
+
+#firepad-back{
+    width:65%;
+    max-width:75%;
+    height: 90vh;
+    margin: 2em;
+}
+
+#aside {
+    width: 35%;
+    min-width:25%;
+    max-height: 90vh;
+    overflow:scroll;
+    margin: 2em;
+    margin-top: 5em;
+    /* height: 70vh; */
+    /* overflow:scroll; */
+}
+
+#firepad-container{
+    width:100%;
+}
+
 input {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 48px;
     padding-top: 20px;
-    padding-left: 20px;
 }
 
 .firepad {
@@ -27,7 +56,8 @@ input {
 
 .firepad-with-toolbar .CodeMirror {
     top: 83px;
-    padding-left: 10px;
+    /*padding-left: 10px;*/
+    width:100%;
 }
 
 .firepad-with-toolbar .CodeMirror-lines {
@@ -37,7 +67,6 @@ input {
 .firepad-toolbar {
     height: 82px;
     line-height: 82px;
-    padding-left: 10px;
     border-bottom: 1px solid #c9c9c9;
     /* Don't select text when double-clicking in toolbar */
     -webkit-touch-callout: none;
@@ -451,4 +480,16 @@ a.firepad-btn:active {
 
 .firepad-tb-bubble:before {
     content: "\e00f";
+}
+
+.firepad-tb-insert-translate-image:before {
+    content: "image";
+}
+
+.firepad-tb-save:before {
+    content: "save";
+}
+
+.firepad-tb-debug:before {
+    content: "debug";
 }

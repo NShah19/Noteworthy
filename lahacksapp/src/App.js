@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import {Link, Switch, Route, HashRouter as Router } from 'react-router-dom'
 import {Container, Header, Image, List, Menu, Segment,
-  Button,Input,Label,
+  Button,Input,Label,Grid,
   Icon} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import * as firebase from 'firebase';
-import CodeMirror from 'codemirror';
 import Firepad from 'firepad';
-
-global.codeMirror=CodeMirror;
 
 const config = {
     apiKey: "AIzaSyBHvYqbcGu2MWc3NiIhsoEejfEKMo2rzl0",
@@ -29,11 +26,14 @@ const HomepageHeading = ({ mobile }) => (
     background: 'linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url("notetaking.jpg")'
    }}>
    <Container text >
-    <div><Header
+    <div style={{
+        margin: 'auto',
+      }}><Header
       as='h1'
       content='Note Marking'
       inverted
       style={{
+        textAlign: 'center',
         fontSize: mobile ? '2em' : '4em',
         fontWeight: 'normal',
         marginBottom: 0,
@@ -45,13 +45,19 @@ const HomepageHeading = ({ mobile }) => (
       content="Remember the important things the easy way."
       inverted
       style={{
+        textAlign: 'center',
         fontSize: mobile ? '1.5em' : '1.7em',
         fontWeight: 'normal',
         marginTop: mobile ? '0.5em' : '1.5em'
       }}
     />
-    <Link to="/editor">
+    <Link to="/editor" style={{
+        margin: 'auto',
+        display: 'block'}}>
     <Button primary size='huge' style={{
+        display: 'block',
+        textAlign: 'center',
+        margin:'auto',
         marginTop: mobile ? '0.5em' : '1.5em',
         marginBottom: mobile ? '1em' : '1.5em'
       }}>
@@ -65,16 +71,57 @@ const HomepageHeading = ({ mobile }) => (
 )
 
 
+const EditorHeading = ({ mobile }) => (
+   <Menu inverted style={{
+    background: 'linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url("relax.jpg")'
+   }}>
+   <Container text >
+    <div style={{
+        margin: 'auto',
+      }}><Header
+      as='h1'
+      content='The Editor'
+      inverted
+      style={{
+        textAlign: 'center',
+        fontSize: mobile ? '2em' : '4em',
+        fontWeight: 'normal',
+        marginBottom: 0,
+        marginTop: '2em',
+      }}
+    />
+    <Header
+      as='h2'
+      content="Write, Comment, Remember"
+      inverted
+      style={{
+        textAlign: 'center',
+        fontSize: mobile ? '1.5em' : '1.7em',
+        fontWeight: 'normal',
+        marginTop: mobile ? '0.5em' : '1.5em',
+        marginBottom: mobile ? '1em' : '1.5em'
+      }}
+    />
+    </div>
+  </Container>
+  </Menu>
+
+)
+
+
 const NotespageHeading = ({ mobile }) => (
    <Menu inverted style={{
     background: 'linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url("notebooks.jpg")'
    }}>
    <Container text >
-    <div><Header
+    <div style={{
+        margin: 'auto',
+      }}><Header
       as='h1'
       content='The Notes Collection'
       inverted
       style={{
+        textAlign: 'center',
         fontSize: mobile ? '2em' : '4em',
         fontWeight: 'normal',
         marginBottom: 0,
@@ -86,6 +133,7 @@ const NotespageHeading = ({ mobile }) => (
       content="Find a past note to work with."
       inverted
       style={{
+        textAlign: 'center',
         fontSize: mobile ? '1.5em' : '1.7em',
         fontWeight: 'normal',
         marginTop: mobile ? '0.5em' : '1.5em',
@@ -107,12 +155,66 @@ this.state = {
         title: [],
         key: [],
         data: [],
+        valid: [],
+        date: [],
         post: '',
-        activeItem: ''
+        activeItem: '',
+        text: ''
     };
 }
+
+/*
+let childRef = firebase.database().ref('/'+child.key);
+    let firepad = new Firepad.Headless(childRef);
+
+    firepad.getText(text=> {
+        console.log('text : '+text);
+});
+*/
+
 //todo
-  handleItemClick = (e, { key }) => this.setState({ activeItem: key })
+  showText(index) {
+    //console.log(index+" "+index);
+    this.setState({ activeItem: index })
+    let childRef = firebase.database().ref('/'+this.state.key[index]);
+    let firepad = new Firepad.Headless(childRef);
+    firepad.getText(text=> {
+        console.log('text : '+text);
+        this.setState({
+           text: text,
+           activeItem: index
+        });
+    });
+}
+
+delete(index) {
+    console.log("Deleting! "+index);
+    let valid = this.state.valid.slice();
+    valid[index] = false;
+    this.setState({
+       value:valid
+    });
+
+    let childRef = firebase.database().ref('/'+this.state.key[index]);
+    childRef.remove();
+
+    const postList = this.state.key.map((dataList, index) => {
+        if(valid[index]) {
+            console.log("Valid "+index);
+        return    <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
+                    {this.state.title[index]} <Label  style={{float:'right'}} onClick={() => this.delete(index)}>D</Label>  <Label style={{float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>
+                </Menu.Item>
+        }
+        else {
+            console.log("Invalid!");
+            return <div></div>;
+        }
+    });
+
+    this.setState({
+        post: postList
+    });
+}
 
   componentDidMount(){
 
@@ -122,32 +224,26 @@ this.state = {
 
    post.once('value', snap => {
        snap.forEach(child => {
-            let childRef = firebase.database().ref('/'+child.key);
-            let codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
-            let firepad = Firepad.fromCodeMirror(childRef, codeMirror, {
-                richTextShortcuts: false,
-                richTextToolbar: false
-              });
 
-            console.log('text!: '+firepad.getText());
+        let childRef = firebase.database().ref('/'+child.key);
 
             childRef.once('value', snapshot => {
                 let name= snapshot.child('metadata/name').val();
+                let date= snapshot.child('metadata/date').val();
 
-                console.log(child.key + " "+name);
+                console.log(child.key + " "+name+" "+date);
 
                 this.setState({
                    key: this.state.key.concat([child.key]),
-                   title: this.state.title.concat([name])
+                   title: this.state.title.concat([name]),
+                   date: this.state.date.concat([date]),
+                   valid: this.state.valid.concat([true])
                 });
 //
                const postList = this.state.key.map((dataList, index) =>
-                  <Link to={'/editor/'+dataList} >
-                  <Menu.Item key={index} active={this.state.activeItem === index} onClick={this.handleItemClick}>
-                        {this.state.title[index]}
-
-                    </Menu.Item></Link>
-
+                       <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
+                        {this.state.title[index]} <Label  style={{float:'right'}} onClick={() => this.delete(index)}>D</Label>  <Label style={{float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>
+                    </Menu.Item>
                 );
 
                 this.setState({
@@ -160,12 +256,17 @@ this.state = {
 
 
   render() {
-
     return (
-        <div>
-        <div id="firepad"></div>
-        <Menu vertical>{this.state.post}</Menu>
-      </div>
+    <Grid >
+      <Grid.Column floated='right' width={6} style={{padding: '0px'}}>
+        <Menu vertical inverted style={{width:'100%'}}>{this.state.post}</Menu>
+      </Grid.Column>
+      <Grid.Column floated='left' width={10} style={{border: '2px solid #CCCCCC'}}>
+        {this.state.text.split("\n").map(i => {
+           return <div>{i}<br/></div>;
+        })}
+      </Grid.Column>
+    </Grid>
     )
   }
 }
@@ -256,8 +357,8 @@ class Folder extends Component {
 class Editor extends Component {
     render(){
         return  (
-             <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
-         <iframe align="center" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
+             <Container align="center"  style={{ marginTop: '7em', width: '90%'}}>
+         <iframe align="center" style= {{ overflowX:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
         </Container>
         );
     }
@@ -283,8 +384,8 @@ class Editor2 extends Component {
 class App extends React.Component {
  render(){
      return <Router><Switch>
-      <Route exact path='/editor' render={() => <PageLayout><Editor/></PageLayout> }/>
-      <Route path='/editor/:id' render={(props) => <PageLayout><Editor2 {...props}/></PageLayout> }/>
+      <Route exact path='/editor' render={() => <PageLayout><div><EditorHeading/><Editor/></div></PageLayout> }/>
+      <Route path='/editor/:id' render={(props) => <PageLayout><div><EditorHeading/><Editor2 {...props}/></div></PageLayout> }/>
       <Route path='/folder' render={() => <PageLayout><div><NotespageHeading/><Folder/></div></PageLayout> }/>
      <Route exact path='/' render={() => <PageLayout><div><HomepageHeading/><HomeLayout/></div></PageLayout> }/>
    </Switch></Router>
