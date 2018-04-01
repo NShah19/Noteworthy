@@ -5,10 +5,11 @@ import json
 from flask import Flask, render_template, request, jsonify
 from google.appengine.api import search
 
+from keywords import *
+from khan_academy import *
 from index import Index
 from Query import *
 
-import keywords
 # [END imports]
 
 # [START create_app]
@@ -39,7 +40,20 @@ def index_doc():
 
     index.insert_document(content['doc_id'], content['doc_name'],
             content['doc_date'], content['doc_text'])
-    return "JSON PARSED"
+    keywords = get_keywords(content['doc_text'])
+    videos = []
+    for i in range(3):
+        if i < len(keywords):
+            keyword = keywords[i]
+            video = search_KA(keyword[0])
+            videos.append(
+                {
+                    "URL" : "www.youtube.com/watch?v=" + video["id"]["videoId"],
+                    "title" : video["snippet"]["title"],
+                    "description" : video["snippet"]["description"]
+                }
+            )
+    return jsonify(videos)
 
 # Each query is one line
 @app.route('/query', methods=["POST"])
