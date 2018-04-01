@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import {Link, Switch, Route, HashRouter as Router } from 'react-router-dom'
 import {Container, Header, Image, List, Menu, Segment,
-  Button,
+  Button,Input,Label,
   Icon} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
@@ -48,6 +48,39 @@ const HomepageHeading = ({ mobile }) => (
 )
 
 
+class NotesList extends Component {
+  state = { activeItem: 'inbox' }
+
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+
+  render() {
+    const { activeItem } = this.state
+
+    return (
+      <Menu vertical>
+        <Menu.Item name='one' active={activeItem === 'one'} onClick={this.handleItemClick}>
+          <Label color='teal'>label</Label>
+          Inbox
+        </Menu.Item>
+
+        <Menu.Item name='two' active={activeItem === 'two'} onClick={this.handleItemClick}>
+          <Label>label</Label>
+          Spam
+        </Menu.Item>
+
+        <Menu.Item name='three' active={activeItem === 'three'} onClick={this.handleItemClick}>
+          <Label>label </Label>
+          Updates
+        </Menu.Item>
+        <Menu.Item>
+          <Input icon='search' placeholder='go to...' />
+        </Menu.Item>
+      </Menu>
+    )
+  }
+}
+
+
 
 class HomeLayout extends Component {
     render(){
@@ -88,6 +121,7 @@ class PageLayout extends Component {
               NoteWorthy
             </Menu.Item>
             <Menu.Item><Link to="/">Home</Link></Menu.Item>
+            <Menu.Item ><Link to="/folder">My Notes</Link></Menu.Item>
             <Menu.Item ><Link to="/editor">New Note</Link></Menu.Item>
           </Container>
         </Menu>
@@ -117,6 +151,19 @@ class PageLayout extends Component {
     }
 }
 
+class Folder extends Component {
+    render(){
+        return  (
+             <div>
+
+              <Container text style={{ marginTop: '7em'}}>
+             <NotesList/>
+              <p style={{ marginTop: '7em'}}>afdsffsadfads notes here</p>
+          </Container>
+           </div>
+            );
+    }
+}
 
 class Editor extends Component {
     render(){
@@ -132,6 +179,7 @@ class App extends React.Component {
  render(){
      return <Router><Switch>
       <Route path='/editor' render={() => <PageLayout><Editor/></PageLayout> }/>
+      <Route path='/folder' render={() => <PageLayout><Folder/></PageLayout> }/>
      <Route exact path='/' render={() => <PageLayout><div><HomepageHeading/><HomeLayout/></div></PageLayout> }/>
    </Switch></Router>
  }

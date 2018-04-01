@@ -5862,14 +5862,48 @@ firepad.Firepad = (function(global) {
     this.makeDialog_('img', 'Insert image url');
   };
 
-
+//WKHERE
   Firepad.prototype.debug = function() {
     console.log("Debugging");
     console.log("key "+this.getExampleRef().key);
     console.log("text "+this.getText());
     console.log("html "+this.getHtml());
-    console.log("stripper " + this.getHtml().replace(/<(?:.|\n)*?>/gm, ''));
-
+    let myhtml=this.getHtml();
+    let mytext=this.getText();
+    let t_i=0;
+    let h_i=0;
+    for (; h_i<myhtml.length; h_i++){
+        if(t_i>=mytext.length){
+             console.log("Unexpected t_i ends!");
+             break;
+        }
+        if(myhtml[h_i]==='<'){
+            if (mytext[t_i]==='\n')
+                t_i+=1;
+            console.log("got <");
+            while (myhtml[h_i]!=='>'){
+                h_i+=1;
+                console.log("skipping til > "+myhtml[h_i]);
+            }
+        }
+        else if(myhtml[h_i]==='&'){
+            console.log("got &");
+            t_i+=1;
+            while (myhtml[h_i]!==';'){
+                h_i+=1;
+                console.log("skipping til ; "+myhtml[h_i]);
+            }
+        }
+        else{
+            if(myhtml[h_i]!==mytext[t_i]){
+                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
+            }
+            else {
+                t_i+=1;
+            }
+            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
+        }
+    }
     //this.setHtml("<div><s>adsffadsfds</s></div><div>&nbsp;</div>")
   };
 
