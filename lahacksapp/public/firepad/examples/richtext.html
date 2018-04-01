@@ -21,6 +21,11 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 
+  <!--bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
     <style>
         html {
             height: 100%;
@@ -147,16 +152,19 @@
                         // An example of a complex custom entity.
                         firepad.registerEntity('button', {
                             render: function(info, entityHandler) {
+                                console.log("info "+info);
                                 var inputElement = document.createElement('button');
-                                //inputElement.setAttribute('type', 'button');
-                                //if (info.checked) {
-                                //    inputElement.checked = 'checked';
-                                //}
-                                //inputElement.addEventListener('click', function() {
-                                //    entityHandler.replace({
-                                //        checked: this.checked
-                                //    });
-                                //});
+                                inputElement.setAttribute('onClick',"window.open('"+ info.url+"', 'Name');");
+                                inputElement.setAttribute('target',"_blank");
+                                var t = document.createTextNode(info.index);
+                                inputElement.appendChild(t);
+                                inputElement.setAttribute('style', 'margin: .2em .2em; font-size: .8em; padding: .1em .4em;');
+                                inputElement.setAttribute('type', 'button');
+                                inputElement.setAttribute('class', 'btn btn-secondary');
+                                inputElement.setAttribute('data-toggle', 'tooltip');
+                                inputElement.setAttribute('data-placement', 'top');
+                                inputElement.setAttribute('title', info.note);
+                                inputElement.setAttribute('padding', '.5em');
                                 return inputElement;
                             }.bind(this),
                             fromElement: function(element) {
@@ -264,8 +272,9 @@
     </div>
     <div id="firepad-container"></div>
     </div>
-    <div id="aside"></div>
     </div>
+    </div>
+
 </body>
 
 </html>
