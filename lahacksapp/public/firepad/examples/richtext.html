@@ -227,11 +227,29 @@
                     return inputElement;
                 }
             });
-            writeTitleData("Untitled");
+            console.log(firepadRef.key)
+            var name = call(firepadRef.key)
+            console.log('name' + name)
+            if(name === ""){
+                writeTitleData("Untitled");
+            }
+            else {
+                writeTitleData(name)
+            }
         }
-
-        function checkNull(){
-
+        
+        function call(id) {
+            console.log('id'+id)
+            var name;
+            var dbref = firebase.database().ref('/'+id)
+            dbref.on('value', function(snapshot){
+                name = snapshot.child('metadata/users').val();
+                console.log('api' + name)
+            })
+            if(name == null){
+                return "";
+            }
+            return name;
         }
 
         // Helper to get hash from end of URL or generate a random one.
@@ -247,7 +265,7 @@
             if (typeof console !== 'undefined') {
                 console.log('Firebase data: ', ref.toString());
             }
-            console.log(ref.key);
+            //console.log(ref.key);
             return ref;
         }
 
