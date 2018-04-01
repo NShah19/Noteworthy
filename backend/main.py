@@ -5,10 +5,11 @@ import json
 from flask import Flask, render_template, request, jsonify
 from google.appengine.api import search
 
+from keywords import *
+from khan_academy import *
 from index import Index
 from Query import *
 
-import keywords
 # [END imports]
 
 # [START create_app]
@@ -37,9 +38,22 @@ def index_doc():
     content = request.get_json()
     print(content)
 
-    index.insert_document(content['doc_id'], content['doc_name'], 
+    index.insert_document(content['doc_id'], content['doc_name'],
             content['doc_date'], content['doc_text'])
-    return "JSON PARSED"
+    keywords = get_keywords(content['doc_text'])
+    videos = []
+    for i in range(3):
+        if i < len(keywords):
+            keyword = keywords[i]
+            video = search_KA(keyword[0])
+            videos.append(
+                {
+                    "URL" : "www.youtube.com/watch?v=" + video["id"]["videoId"],
+                    "title" : video["snippet"]["title"],
+                    "description" : video["snippet"]["description"]
+                }
+            )
+    return jsonify(videos)
 
 # Each query is one line
 @app.route('/query', methods=["POST"])
@@ -48,8 +62,12 @@ def query():
     line = request.get_json()['line']
     print(line, type(line))
 
-    annotation = search_line(line, index)
-    return jsonify(annotation = annotation)
+    annotation_list = search_line(line, index)
+    if not annotation_list:
+        annotation_dict = {}
+    else:
+        annotation_dict = {"avg_score": annotation_list[0], "ids_and_blurbs" : annotation_list[1], "start_num": annotation_list[2], "stop_num": annotation_list[3]}
+    return jsonify(annotation_dict)
 
 @app.route('/test', methods=["GET"])
 def test_doc():
@@ -57,7 +75,7 @@ def test_doc():
 
     doc_id = request.args.get('id')
     index.test(doc_id)
-    
+
     return "TEST PASSED"
     # return keywords.test_sent()
 
