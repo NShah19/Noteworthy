@@ -5726,7 +5726,9 @@ firepad.Firepad = (function(global) {
         doc_date: date
     };
     console.log(JSON.stringify(data));
-
+    var fp = this;
+    console.log(this)
+    var newText;
     $.ajax({
         type: "POST",
         url: url,
@@ -5734,11 +5736,25 @@ firepad.Firepad = (function(global) {
         contentType: 'application/json',
         success: function(dataRes) {
             console.log("Success");
-            console.log(dataRes);
-        }
+            console.log(dataRes.length);
+            for (let i = 0; i < dataRes.length; i++) {
+              //console.log(dataRes[i]["URL"])
+              var link = (dataRes[i]["URL"])+'\n';
+              if(newText == undefined){
+                newText = ''
+              }
+              newText += link
+            }
+            var bunchofNewLines = '\n\n\n\n\n\n\n\n\n\n'
+            var refText = 'See these Khan Academy Videos for Reference'
+            text = text + bunchofNewLines + refText +'\n' + newText;
+            console.log("INSIDE AJAX")
+            console.log(fp);
+            fp.setText(text);
+          }
     })
-
   }
+
   Firepad.prototype.newline = function() {
     var ref = this.getExampleRef();
     var id = ref.key
@@ -5774,7 +5790,10 @@ firepad.Firepad = (function(global) {
     var line = ""
     line = text.substring(cursorLoc - counter, cursorLoc);
     console.log("Line is "+ line);
-
+    if(line == '\n'){
+      console.log('newline check')
+    }
+    else {
     let data={
         line: line
     };
@@ -5817,7 +5836,9 @@ firepad.Firepad = (function(global) {
             }
         }
     })
+  } 
 
+    this.richTextCodeMirror_.newline();
   };
 
   Firepad.prototype.deleteLeft = function() {
