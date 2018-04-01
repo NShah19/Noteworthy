@@ -460,3 +460,7 @@ a.firepad-btn:active {
 .firepad-tb-save:before {
     content: "save";
 }
+
+.firepad-tb-debug:before {
+    content: "debug";
+}

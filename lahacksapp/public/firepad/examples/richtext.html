@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.css" />
 
     <!-- Firepad -->
-
     <link rel="stylesheet" href="../lib/firepad.css" />
     <script src="../lib/firepad.js"></script>
 
@@ -44,13 +43,14 @@
 
 <body onload="init()">
     <div class="document-name">
-        <input style="border: none; color: grey;" id="namefield" type="text" font-size="150px" name="docname" value="Untitled">
+        <input style="border: none; color: grey;" id="namefield" type="text" font-size="150px" name="docname" placeholder="">
         <script>
             var nameInput = document.getElementById('namefield');
             nameInput.addEventListener("keydown", function(e) {
                 if (e.keyCode === 13) { //checks whether the pressed key is "Enter"
                     var title = nameInput.value;
                     writeTitleData(title);
+                    console.log("Saved title");
                 }
             });
         </script>
@@ -85,9 +85,14 @@
                 richTextToolbar: true,
                 richTextShortcuts: true
             });
-            /*//// Initialize contents.
+
+
+            restoreValue(getExampleRef().key);
+
+           //// Initialize contents.
             firepad.on('ready', function() {
               if (firepad.isHistoryEmpty()) {
+              /*
                 firepad.setHtml(
                     '<span style="font-size: 24px;">Rich-text editing with <span style="color: red">Firepad!</span></span><br/>\n' +
                     '<br/>' +
@@ -115,9 +120,9 @@
                       '<li><checkbox></checkbox> It supports customized entities.</li>' +
                       '<li>And it\'s all fully collaborative!</li>' +
                     '</ul>' +
-                    '</div>');
+                    '</div>');*/
               }
-            });*/
+            });
 
             //Sync function
             /*firepad.on('synced', function(isSynced) {
@@ -138,6 +143,12 @@
 
             //button on press function
             function buttonPress() {
+                var pad = document.getElementById("firepad");
+                firepad.addEventListener("keydown", function(e) {
+                    if (e.keycode === "13") {
+                        console.log("enter pressed")
+                    }
+                })
                 var elements = firepad.getText();
                 var url = "https://lahacks2018-199705.appspot.com/index"
                 $.ajax({
@@ -151,39 +162,6 @@
                 })
             }
 
-            //// Initialize contents.
-            firepad.on('ready', function() {
-                // if (firepad.isHistoryEmpty()) {
-                //     firepad.setHtml(
-                // '<span style="font-size: 24px;">Rich-text editing with <span style="color: red">Firepad!</span></span><br/>\n' +
-                // '<br/>' +
-                // '<div style="font-size: 18px">' +
-                // 'Supports:<br/>' +
-                // '<ul>' +
-                //   '<li>Different ' +
-                //     '<span style="font-family: impact">fonts,</span>' +
-                //     '<span style="font-size: 24px;"> sizes, </span>' +
-                //     '<span style="color: blue">and colors.</span>' +
-                //   '</li>' +
-                //   '<li>' +
-                //     '<b>Bold, </b>' +
-                //     '<i>italic, </i>' +
-                //     '<u>and underline.</u>' +
-                //   '</li>' +
-                //   '<li>Lists' +
-                //     '<ol>' +
-                //       '<li>One</li>' +
-                //       '<li>Two</li>' +
-                //     '</ol>' +
-                //   '</li>' +
-                //   '<li>Undo / redo</li>' +
-                //   '<li>Cursor / selection synchronization.</li>' +
-                //   '<li><checkbox></checkbox> It supports customized entities.</li>' +
-                //   '<li>And it\'s all fully collaborative!</li>' +
-                // '</ul>' +
-                // '</div>');
-                // }
-            });
 
             // An example of a complex custom entity.
             firepad.registerEntity('checkbox', {
@@ -222,8 +200,37 @@
                     return inputElement;
                 }
             });
-            writeTitleData("Untitled");
+
         }
+
+        function restoreValue(id) {
+            console.log('id'+id)
+            var name;
+            var dbref = firebase.database().ref('/'+id)
+            dbref.on('value', function(snapshot){
+                name = snapshot.child('metadata/name').val();
+                //console.log('found name ' + name)
+                if(name == undefined){
+                    document.getElementById('namefield').value = "Untitled";
+                }
+                else{
+                    document.getElementById('namefield').value = name;
+                }
+            })
+        }
+/*
+         function call(id) {
+            console.log('id'+id)
+            var name;
+            var dbref = firebase.database().ref('/'+id)
+            dbref.on('value', function(snapshot){
+                name = snapshot.child('metadata/name').val();
+                console.log('api' + name)
+                if(name != undefined)
+                    document.getElementById('namefield').value = name;
+            })
+        }
+*/
 
         // Helper to get hash from end of URL or generate a random one.
         function getExampleRef() {
@@ -238,7 +245,7 @@
             if (typeof console !== 'undefined') {
                 console.log('Firebase data: ', ref.toString());
             }
-            console.log(ref.key);
+            //console.log(ref.key);
             return ref;
         }
 
@@ -250,6 +257,7 @@
                 date: date.toDateString(),
             });
         }
+
     </script>
 </body>
 
