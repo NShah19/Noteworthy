@@ -13,10 +13,43 @@ const config = {
 };
 firebase.initializeApp(config);
 
+// Global variables
+// Holds { filename: name, date: date, id: id }
+let files = [];
+
 (function() {
     const dbRefObject = firebase.database().ref()
     dbRefObject.on('value', data => {
         obj = data.val();
         console.log(obj);
+        allocateFiles(obj); 
+        initializeFiles();      
     });
 }());
+
+function allocateFiles(filesObj) {
+  files = [];
+  keys = Object.keys(filesObj);
+  for (let i = 0; i < keys.length; i++) {
+    let key = keys[i];
+    let file = filesObj[key];
+    if ("metadata" in file) {
+      files.push({
+        "filename": file["metadata"]["name"],
+        "date": file["metadata"]["date"],
+        "id": key,
+      });
+    }
+  }
+}
+
+function initializeFiles() {
+  var filesWrapper = document.getElementById("filesWrapper");
+  filesWrapper.innerHTML = "";  // Clears inner html
+  for (var i = 0; i < files.length; i++) {
+    let file = files[i];
+    var newFileDiv = document.createElement("div");
+    newFileDiv.innerHTML = "DOC " + file["filename"] + " " + file["date"];
+    filesWrapper.append(newFileDiv);
+  }
+}
