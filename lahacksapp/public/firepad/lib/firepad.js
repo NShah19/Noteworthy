@@ -5892,12 +5892,20 @@ console.log("Debugging");
                         let aside = document.getElementById('aside');
                         console.log(aside);
                         aside.innerHTML = "";
-                        for (let i = 1; i < obj.length; i++) {
+                        for (let i = 1; i < obj.length; i++) {                                              
                           let textNode = document.createTextNode(
                             "" + i + ") " + obj[i]["blurb"]);
                           let pNode = document.createElement("P");
                           pNode.appendChild(textNode);
+
+                          let aNode = document.createElement('a');
+                          let url = "http://noteworthy.bitballoon.com/#/editor/" + obj[i]["id"];
+                          aNode.href = url;
+                          let linkTextNode = document.createTextNode("See document reference");
+                          aNode.appendChild(linkTextNode);
+
                           aside.appendChild(pNode);
+                          aside.appendChild(aNode);
                         }
                   });
               });
