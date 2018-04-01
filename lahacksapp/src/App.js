@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import {Link, Switch, Route, HashRouter as Router } from 'react-router-dom'
 import {Container, Header, Image, List, Menu, Segment,
-  Button,Input,Label,
+  Button,Input,Label,Grid,
   Icon} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import * as firebase from 'firebase';
-import CodeMirror from 'codemirror';
 import Firepad from 'firepad';
-
-global.codeMirror=CodeMirror;
 
 const config = {
     apiKey: "AIzaSyBHvYqbcGu2MWc3NiIhsoEejfEKMo2rzl0",
@@ -108,11 +105,38 @@ this.state = {
         key: [],
         data: [],
         post: '',
-        activeItem: ''
+        activeItem: '',
+        text: ''
     };
 }
+
+/*
+let childRef = firebase.database().ref('/'+child.key);
+    let firepad = new Firepad.Headless(childRef);
+
+    firepad.getText(text=> {
+        console.log('text : '+text);
+});
+*/
+
 //todo
-  handleItemClick = (e, { key }) => this.setState({ activeItem: key })
+  handleMouseOver (index) {
+    console.log(index+" "+index);
+    this.setState({ activeItem: index })
+    let childRef = firebase.database().ref('/'+this.state.key[index]);
+    let firepad = new Firepad.Headless(childRef);
+    firepad.getText(text=> {
+        console.log('text : '+text);
+        this.setState({
+           text: text,
+           activeItem: index
+        });
+        if(text==""){
+            console.log("No text, removing!");
+            childRef.remove();
+        }
+    });
+}
 
   componentDidMount(){
 
@@ -122,14 +146,8 @@ this.state = {
 
    post.once('value', snap => {
        snap.forEach(child => {
-            let childRef = firebase.database().ref('/'+child.key);
-            let codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
-            let firepad = Firepad.fromCodeMirror(childRef, codeMirror, {
-                richTextShortcuts: false,
-                richTextToolbar: false
-              });
 
-            console.log('text!: '+firepad.getText());
+        let childRef = firebase.database().ref('/'+child.key);
 
             childRef.once('value', snapshot => {
                 let name= snapshot.child('metadata/name').val();
@@ -143,11 +161,9 @@ this.state = {
 //
                const postList = this.state.key.map((dataList, index) =>
                   <Link to={'/editor/'+dataList} >
-                  <Menu.Item key={index} active={this.state.activeItem === index} onClick={this.handleItemClick}>
+                  <Menu.Item style={{border:'1px solid grey',borderRadius: '5px'}} key={index} active={this.state.activeItem === index} onMouseOver={() => this.handleMouseOver(index)}>
                         {this.state.title[index]}
-
                     </Menu.Item></Link>
-
                 );
 
                 this.setState({
@@ -162,10 +178,16 @@ this.state = {
   render() {
 
     return (
-        <div>
-        <div id="firepad"></div>
-        <Menu vertical>{this.state.post}</Menu>
-      </div>
+    <Grid style={{border:'.5em solid #333333'}}>
+      <Grid.Column floated='left' width={6}>
+        <Menu vertical inverted>{this.state.post}</Menu>
+      </Grid.Column>
+      <Grid.Column floated='left' width={10}>
+        {this.state.text.split("\n").map(i => {
+            return <div>{i}<br/></div>;
+        })}
+      </Grid.Column>
+    </Grid>
     )
   }
 }
