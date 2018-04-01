@@ -164,39 +164,42 @@
 
 
             // An example of a complex custom entity.
-            firepad.registerEntity('checkbox', {
+            firepad.registerEntity('button', {
                 render: function(info, entityHandler) {
-                    var inputElement = document.createElement('input');
-                    inputElement.setAttribute('type', 'checkbox');
-                    if (info.checked) {
-                        inputElement.checked = 'checked';
-                    }
-                    inputElement.addEventListener('click', function() {
-                        entityHandler.replace({
-                            checked: this.checked
-                        });
-                    });
+                    var inputElement = document.createElement('button');
+                    //inputElement.setAttribute('type', 'button');
+                    //if (info.checked) {
+                    //    inputElement.checked = 'checked';
+                    //}
+                    //inputElement.addEventListener('click', function() {
+                    //    entityHandler.replace({
+                    //        checked: this.checked
+                    //    });
+                    //});
                     return inputElement;
                 }.bind(this),
                 fromElement: function(element) {
                     var info = {};
-                    if (element.hasAttribute('checked')) {
+                   /* if (element.hasAttribute('checked')) {
                         info.checked = true;
                     }
+                    */
                     return info;
                 },
                 update: function(info, element) {
-                    if (info.checked) {
+                   /* if (info.checked) {
                         element.checked = 'checked';
                     } else {
                         element.checked = null;
                     }
+                    */
                 },
                 export: function(info) {
-                    var inputElement = document.createElement('checkbox');
-                    if (info.checked) {
+                    var inputElement = document.createElement('button');
+                    /*if (info.checked) {
                         inputElement.setAttribute('checked', true);
                     }
+                    */
                     return inputElement;
                 }
             });

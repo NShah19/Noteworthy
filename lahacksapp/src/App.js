@@ -155,7 +155,6 @@ class Folder extends Component {
     render(){
         return  (
              <div>
-
               <Container text style={{ marginTop: '7em'}}>
              <NotesList/>
               <p style={{ marginTop: '7em'}}>afdsffsadfads notes here</p>
@@ -171,7 +170,7 @@ class Editor extends Component {
              <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
          <iframe align="center" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
         </Container>
-            );
+        );
     }
 }
 

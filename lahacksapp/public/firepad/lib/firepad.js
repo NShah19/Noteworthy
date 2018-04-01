@@ -5868,8 +5868,13 @@ firepad.Firepad = (function(global) {
     console.log("key "+this.getExampleRef().key);
     console.log("text "+this.getText());
     console.log("html "+this.getHtml());
+    let testStart=3;
+    let testEnd=6;
+    let resStart=-1;
+    let resEnd=-1;
     let myhtml=this.getHtml();
     let mytext=this.getText();
+
     let t_i=0;
     let h_i=0;
     for (; h_i<myhtml.length; h_i++){
@@ -5888,6 +5893,10 @@ firepad.Firepad = (function(global) {
         }
         else if(myhtml[h_i]==='&'){
             console.log("got &");
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
             t_i+=1;
             while (myhtml[h_i]!==';'){
                 h_i+=1;
@@ -5895,6 +5904,10 @@ firepad.Firepad = (function(global) {
             }
         }
         else{
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
             if(myhtml[h_i]!==mytext[t_i]){
                 console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
             }
@@ -5904,8 +5917,24 @@ firepad.Firepad = (function(global) {
             console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
         }
     }
-    //this.setHtml("<div><s>adsffadsfds</s></div><div>&nbsp;</div>")
-  };
+    console.log("Starting "+resStart);
+    console.log("Ending "+resEnd);
+    console.log("Total "+myhtml.substring(resStart,resEnd));
+
+    for (let i=resStart; i<resEnd; i++){
+        if(myhtml[i]==='<'){
+            resEnd=i;
+            break;
+        }
+    }
+    console.log("Total2 "+myhtml.substring(resStart,resEnd));
+    let newBegin=myhtml.substring(0,resStart);
+    let mid = myhtml.substring(resStart,resEnd);
+    let newEnd=myhtml.substring(resEnd,myhtml.length);
+    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
+    this.setHtml(res);
+    console.log("Result "+res);
+}
 
 
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
