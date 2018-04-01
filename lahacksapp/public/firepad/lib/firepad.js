@@ -5741,6 +5741,9 @@ firepad.Firepad = (function(global) {
 
   }
   Firepad.prototype.newline = function() {
+    var ref = this.getExampleRef();
+    var id = ref.key
+    console.log(id);
     console.log("here in newline");
     let text = this.getText();
     //console.log(text);

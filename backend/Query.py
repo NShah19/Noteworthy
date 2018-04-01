@@ -1,5 +1,6 @@
 import re
 import csv
+import logging
 from google.appengine.api import search
 
 
@@ -69,10 +70,14 @@ def search_line(line, index):
             associated_docs.append(doc)
             for expr in doc.expressions:
                 if expr.name == "relevance_score":
-                    doc_scores.append(expr.value)
-                    break
+                    try:
+                        doc_scores.append(int(expr.value))
+                        break
+                    except:
+                        pass
             i += 1
 #        doc_scores = [doc.sort_scores[0] for doc in associated_docs]
+        logging.info(doc_scores)
         avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else -9999999
         good_doc_ids = [doc.doc_id for doc in associated_docs]
         query_results.append((avg_score, good_doc_ids, query_text, start, end)) # HOW TO RETREIVE SCORES USED FOR SORTING? NEED THEM TO DETERMINE BEST QUERY
@@ -98,7 +103,7 @@ def search_line(line, index):
         associated_docs.append(doc)
         i += 1
     doc_scores = [doc.sort_scores[0] for doc in associated_docs]
-    avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else 0
+    avg_score = sum(doc_scores)/ float(len(doc_scores)) if len(doc_scores) else -9999999
     ids_and_blurbs = []
     for doc in associated_docs:
         for expr in doc.expressions:
