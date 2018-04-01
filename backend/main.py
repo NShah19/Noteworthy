@@ -49,7 +49,10 @@ def query():
     print(line, type(line))
 
     annotation_list = search_line(line, index)
-    annotation_dict = {"avg_score": annotation_list[0], "ids_and_blurbs" : annotation_list[1], "start_num": annotation_list[2], "stop_num": annotation_list[3]}
+    if not annotation_list:
+        annotation_dict = {}
+    else:
+        annotation_dict = {"avg_score": annotation_list[0], "ids_and_blurbs" : annotation_list[1], "start_num": annotation_list[2], "stop_num": annotation_list[3]}
     return jsonify(annotation_dict)
 
 @app.route('/test', methods=["GET"])

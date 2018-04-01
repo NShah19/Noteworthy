@@ -41,6 +41,8 @@ def generate_queries_for_line(line):
 def search_line(line, index):
     line = line + " I"
     queries_with_text = generate_queries_for_line(line)
+    if not queries_with_text:
+        return None
     #Generate SOrt Options Object
     sort_opts = search.SortOptions(match_scorer=search.MatchScorer())
     relevance_field_expr = search.FieldExpression(name="relevance_score", expression="_score")
@@ -105,4 +107,6 @@ def search_line(line, index):
                 ids_and_blurbs.append((doc.doc_id, description_snippet))
                 break
     final_ret_val = [avg_score, ids_and_blurbs, best_query[3], best_query[4]] #still need to add KhanAcademy here
+    if final_ret_val[0] < 0:
+        return None
     return final_ret_val
