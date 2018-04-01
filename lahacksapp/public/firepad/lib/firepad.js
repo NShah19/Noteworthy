@@ -5740,7 +5740,6 @@ firepad.Firepad = (function(global) {
     })
 
   }
-
   Firepad.prototype.newline = function() {
     var ref = this.getExampleRef();
     var id = ref.key
@@ -5790,22 +5789,31 @@ firepad.Firepad = (function(global) {
             console.log("Success");
             console.log(dataRes);
             if(Object.keys(dataRes).length != 0){
-            let parsedJSON = JSON.parse(dataRes);
-            let startIndex = parsedJSON.startIndex;
-            let endIndex = parsedJSON.endIndex;
-            let IDList = parsedJSON.ids_and_blurbs;
+              let parsedJSON = dataRes;
+              let startIndex = parsedJSON.startIndex;
+              let endIndex = parsedJSON.endIndex;
+              let IDList = parsedJSON.ids_and_blurbs;
 
-            // call highlightText(start, end)
-
-            for (let i =0; i < IDList.length; i++){
-                let ID = IDList[i][0];
-                let blurb = IDList[i][1];
-                // call function to make annotation
-                console.log(ID + " " + blurb);
+              // call highlightText(start, end)
+              console.log("list" + IDList);
+              let ID = IDList[0][0];
+              let text_blurb = IDList[0][1];
+              var ref = getExampleRef(); 
+              var num;
+              firebase.database().ref().child(ref.key + '/annotations').on("value", function(snapshot){
+                num = snapshot.numChildren() + 1;
+                console.log("num" + num);
+              })
+              firebase.database().ref().child(ref.key + '/annotations/' + num).set({
+                  id: ID,
+                  blurb: text_blurb,
+              });
+            // function to update annotations on sidebar
             }
         }
-        }
     })
+            
+            
     this.richTextCodeMirror_.newline();
   };
 

@@ -252,7 +252,7 @@
         }
 
         function writeTitleData(title) {
-            var ref = getExampleRef();
+            var ref = getExampleRef(); 
             var date = new Date();
             firebase.database().ref().child(ref.key + '/metadata').set({
                 name: title,
