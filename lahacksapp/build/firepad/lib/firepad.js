@@ -1739,7 +1739,7 @@ firepad.RichTextToolbar = (function(global) {
 
   utils.makeEventEmitter(RichTextToolbar, ['bold', 'italic', 'underline', 'strike', 'font', 'font-size', 'color',
     'left', 'center', 'right', 'unordered-list', 'ordered-list', 'todo-list', 'indent-increase', 'indent-decrease',
-                                           'undo', 'redo', 'insert-image', 'insert-translate-image']);
+                                           'undo', 'redo', 'insert-image', 'insert-translate-image','save','debug']);
 
   RichTextToolbar.prototype.element = function() { return this.element_; };
 
@@ -1772,6 +1772,8 @@ firepad.RichTextToolbar = (function(global) {
     if (self.imageInsertionUI) {
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-image')], { 'class': 'firepad-btn-group' }));
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-translate-image')], { 'class': 'firepad-btn-group' }));
+      toolbarOptions.push(utils.elt('div', [self.makeButton_('save')], { 'class': 'firepad-btn-group' }));
+      toolbarOptions.push(utils.elt('div', [self.makeButton_('debug')], { 'class': 'firepad-btn-group' }));
     }
 
     var toolbarWrapper = utils.elt('div', toolbarOptions, { 'class': 'firepad-toolbar-wrapper' });
@@ -2476,6 +2478,8 @@ firepad.ACEAdapter = (function() {
     this.ace.removeListener('focus', this.onCursorActivity);
     return this.aceSession.selection.removeListener('changeCursor', this.onCursorActivity);
   };
+
+
 
   ACEAdapter.prototype.onChange = function(change) {
     var pair;
@@ -5670,7 +5674,239 @@ firepad.Firepad = (function(global) {
     this.codeMirror_.focus();
   };
 
+
+  Firepad.prototype.getExampleRef = function() {
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+        var ref = firebase.database().ref();
+        var hash = window.location.hash.replace(/#/g, '');
+        if (hash) {
+            ref = ref.child(hash);
+        } else {
+            ref = ref.push(); // generate unique location.
+            window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+        }
+        if (typeof console !== 'undefined') {
+            console.log('Firebase data: ', ref.toString());
+        }
+        console.log(ref.key);
+        return ref;
+    }
+
+  Firepad.prototype.save = function() {
+    console.log("here in save");
+    let text = this.getText();
+    //console.log(text);
+    var ref = this.getExampleRef();
+    var date = new Date();
+    //console.log(ref);
+    //console.log(date);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let nameInput = document.getElementById('namefield');
+    let title = nameInput.value;
+    //console.log("Title "+title);
+
+    firebase.database().ref().child(ref.key + '/metadata').set({
+        name: title,
+        date: date.toDateString(),
+    });
+    console.log("Done");
+    let url = "https://lahacks2018-199705.appspot.com/index";
+
+    console.log("ref key "+ref.key);
+
+    var data = {
+        doc_name: title,
+        doc_text: text,
+        doc_id: ref.key,
+        doc_date: date
+    };
+    console.log(JSON.stringify(data));
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+        }
+    })
+
+  }
   Firepad.prototype.newline = function() {
+    var ref = this.getExampleRef();
+    var id = ref.key
+    console.log(id);
+    console.log("here in newline");
+    let text = this.getText();
+    //console.log(text);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let url = "https://lahacks2018-199705.appspot.com/query";
+    cursorLoc=this.codeMirror_.indexFromPos(this.codeMirror_.getCursor());
+    //console.log("Cursor! ",this.codeMirror_.indexFromPos(this.codeMirror_.getCursor()));
+
+    for(var i = 0; i < cursorLoc; i++){
+        if(text[i] === '\n'){
+            cursorLoc--;
+        }
+    }
+    //console.log("starts at ",text[cursorLoc-2]);
+
+    var counter = 0;
+    for(var i = cursorLoc-2; i >= 0; i--){
+        if(text[i] === '\n')
+            break;
+        counter++;
+    }
+
+    //console.log(text.split('\n'));
+    //console.log("counter "+counter);
+    var line = text.substring(cursorLoc - counter - 1,cursorLoc);
+    console.log("Line is "+ line);
+
+    let data={
+        line: line
+    };
+    console.log(data);
+    console.log(JSON.stringify(data));
+
+   $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+            if(Object.keys(dataRes).length != 0){
+              let startIndex = dataRes.startIndex;
+              let endIndex = dataRes.endIndex;
+              let IDList = dataRes.ids_and_blurbs;
+              /*
+console.log("Debugging");
+    console.log("key "+this.getExampleRef().key);
+    console.log("text "+this.getText());
+    console.log("html "+this.getHtml());
+    let testStart=startIndex;
+    let testEnd=endIndex;
+    let resStart=-1;
+    let resEnd=-1;
+    let myhtml=this.getHtml();
+    let mytext=this.getText();
+
+    let t_i=0;
+    let h_i=0;
+    for (; h_i<myhtml.length; h_i++){
+        if(t_i>=mytext.length){
+             console.log("Unexpected t_i ends!");
+             break;
+        }
+        if(myhtml[h_i]==='<'){
+            if (mytext[t_i]==='\n')
+                t_i+=1;
+            console.log("got <");
+            while (myhtml[h_i]!=='>'){
+                h_i+=1;
+                console.log("skipping til > "+myhtml[h_i]);
+            }
+        }
+        else if(myhtml[h_i]==='&'){
+            console.log("got &");
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            t_i+=1;
+            while (myhtml[h_i]!==';'){
+                h_i+=1;
+                console.log("skipping til ; "+myhtml[h_i]);
+            }
+        }
+        else{
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            if(myhtml[h_i]!==mytext[t_i]){
+                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
+            }
+            else {
+                t_i+=1;
+            }
+            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
+        }
+    }
+    console.log("Starting "+resStart);
+    console.log("Ending "+resEnd);
+    console.log("Total "+myhtml.substring(resStart,resEnd));
+
+    for (let i=resStart; i<resEnd; i++){
+        if(myhtml[i]==='<'){
+            resEnd=i;
+            break;
+        }
+    }
+    console.log("Total2 "+myhtml.substring(resStart,resEnd));
+    let newBegin=myhtml.substring(0,resStart);
+    let mid = myhtml.substring(resStart,resEnd);
+    let newEnd=myhtml.substring(resEnd,myhtml.length);
+    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
+    this.setHtml(res);
+    console.log("Result "+res);
+
+              */
+              // call highlightText(start, end)
+              console.log("list" + IDList);
+              let ID = IDList[0][0];
+              let text_blurb = IDList[0][1];
+              var ref = getExampleRef();
+              var num;
+              firebase.database().ref().child(ref.key + '/annotations').once("value")
+                .then( function(snapshot){
+                  num = snapshot.numChildren() + 1;
+                  console.log("num" + num);
+                  firebase.database().ref().child(ref.key + '/annotations/' + num)
+                    .set({
+                      id: ID,
+                      blurb: text_blurb,
+                    });
+                  var aside = document.getElementById('aside');
+
+                  firebase.database().ref().child(ref.key + '/annotations')
+                    .once("value").then( data => {
+                        console.log(data);
+                        obj = data.val();
+                        console.log(obj);
+
+                        // let keys = Object.keys(obj);
+                        let aside = document.getElementById('aside');
+                        console.log(aside);
+                        aside.innerHTML = "";
+                        for (let i = 1; i < obj.length; i++) {
+                          let textNode = document.createTextNode(
+                            "" + i + ") " + obj[i]["blurb"]);
+                          let pNode = document.createElement("P");
+                          pNode.appendChild(textNode);
+                          aside.appendChild(pNode);
+                        }
+                  });
+              });
+
+            }
+        }
+    })
+
+
     this.richTextCodeMirror_.newline();
   };
 
@@ -5730,6 +5966,81 @@ firepad.Firepad = (function(global) {
     this.makeDialog_('img', 'Insert image url');
   };
 
+//WKHERE
+  Firepad.prototype.debug = function() {
+    console.log("Debugging");
+    console.log("key "+this.getExampleRef().key);
+    console.log("text "+this.getText());
+    console.log("html "+this.getHtml());
+    let testStart=3;
+    let testEnd=6;
+    let resStart=-1;
+    let resEnd=-1;
+    let myhtml=this.getHtml();
+    let mytext=this.getText();
+
+    let t_i=0;
+    let h_i=0;
+    for (; h_i<myhtml.length; h_i++){
+        if(t_i>=mytext.length){
+             console.log("Unexpected t_i ends!");
+             break;
+        }
+        if(myhtml[h_i]==='<'){
+            if (mytext[t_i]==='\n')
+                t_i+=1;
+            console.log("got <");
+            while (myhtml[h_i]!=='>'){
+                h_i+=1;
+                console.log("skipping til > "+myhtml[h_i]);
+            }
+        }
+        else if(myhtml[h_i]==='&'){
+            console.log("got &");
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            t_i+=1;
+            while (myhtml[h_i]!==';'){
+                h_i+=1;
+                console.log("skipping til ; "+myhtml[h_i]);
+            }
+        }
+        else{
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            if(myhtml[h_i]!==mytext[t_i]){
+                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
+            }
+            else {
+                t_i+=1;
+            }
+            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
+        }
+    }
+    console.log("Starting "+resStart);
+    console.log("Ending "+resEnd);
+    console.log("Total "+myhtml.substring(resStart,resEnd));
+
+    for (let i=resStart; i<resEnd; i++){
+        if(myhtml[i]==='<'){
+            resEnd=i;
+            break;
+        }
+    }
+    console.log("Total2 "+myhtml.substring(resStart,resEnd));
+    let newBegin=myhtml.substring(0,resStart);
+    let mid = myhtml.substring(resStart,resEnd);
+    let newEnd=myhtml.substring(resEnd,myhtml.length);
+    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
+    this.setHtml(res);
+    console.log("Result "+res);
+}
+
+
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
    var self = this;
 
@@ -5786,6 +6097,8 @@ firepad.Firepad = (function(global) {
     this.toolbar.on('indent-decrease', this.unindent, this);
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
     this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
+    this.toolbar.on('save', this.save, this);
+    this.toolbar.on('debug', this.debug, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
@@ -5793,6 +6106,7 @@ firepad.Firepad = (function(global) {
     var poweredBy = utils.elt('a', null, { 'class': 'powered-by-firepad'} );
     this.firepadWrapper_.appendChild(poweredBy)
   };
+
 
   Firepad.prototype.initializeKeyMap_ = function() {
     function binder(fn) {

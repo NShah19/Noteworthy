@@ -261,7 +261,7 @@ delete(index) {
       <Grid.Column floated='right' width={6} style={{padding: '0px'}}>
         <Menu vertical inverted style={{width:'100%'}}>{this.state.post}</Menu>
       </Grid.Column>
-      <Grid.Column floated='left' width={10} style={{border: '2px solid #EEEEEE'}}>
+      <Grid.Column floated='left' width={10} style={{border: '2px solid #CCCCCC'}}>
         {this.state.text.split("\n").map(i => {
            return <div>{i}<br/></div>;
         })}
