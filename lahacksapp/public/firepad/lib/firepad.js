@@ -5796,7 +5796,7 @@ firepad.Firepad = (function(global) {
               console.log("list" + IDList);
               let ID = IDList[0][0];
               let text_blurb = IDList[0][1];
-              let url = "https://www.google.com/";
+              let url = "http://noteworthy.bitballoon.com/#/editor/" +ID;
               var ref = getExampleRef();
               var num;
               firebase.database().ref().child(ref.key + '/annotations').once("value")
@@ -5810,34 +5810,6 @@ firepad.Firepad = (function(global) {
                       id: ID,
                       blurb: text_blurb,
                     });
-                  var aside = document.getElementById('aside');
-
-                  firebase.database().ref().child(ref.key + '/annotations')
-                    .once("value").then( data => {
-                        console.log(data);
-                        obj = data.val();
-                        console.log(obj);
-
-                        // let keys = Object.keys(obj);
-                        let aside = document.getElementById('aside');
-                        console.log(aside);
-                        aside.innerHTML = "";
-                        for (let i = 1; i < obj.length; i++) {                                              
-                          let textNode = document.createTextNode(
-                            "" + i + ") " + obj[i]["blurb"]);
-                          let pNode = document.createElement("P");
-                          pNode.appendChild(textNode);
-
-                          let aNode = document.createElement('a');
-                          let url = "http://noteworthy.bitballoon.com/#/editor/" + obj[i]["id"];
-                          aNode.href = url;
-                          let linkTextNode = document.createTextNode("See document reference");
-                          aNode.appendChild(linkTextNode);
-
-                          aside.appendChild(pNode);
-                          aside.appendChild(aNode);
-                        }
-                  });
               });
 
             }else{

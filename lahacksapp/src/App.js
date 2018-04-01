@@ -233,13 +233,15 @@ delete(index) {
                 let date= snapshot.child('metadata/date').val();
 
                 console.log(child.key + " "+name+" "+date);
-
-                this.setState({
-                   key: this.state.key.concat([child.key]),
-                   title: this.state.title.concat([name]),
-                   date: this.state.date.concat([date]),
-                   valid: this.state.valid.concat([true])
-                });
+                if(name !== undefined && name !== 'Untitled' && name!== null){
+                    console.log(name + " Name is not undefined")
+                    this.setState({
+                       key: this.state.key.concat([child.key]),
+                       title: this.state.title.concat([name]),
+                       date: this.state.date.concat([date]),
+                       valid: this.state.valid.concat([true])
+                    });
+                }
 //
                const postList = this.state.key.map((dataList, index) =>
                        <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
