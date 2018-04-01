@@ -5772,14 +5772,14 @@ firepad.Firepad = (function(global) {
     //console.log("Cursor! ",this.codeMirror_.indexFromPos(this.codeMirror_.getCursor()));
 
     for(var i = 0; i < cursorLoc; i++){
-        if(text[i] === '\n'){
+        if(text[i] === '\n') {
             cursorLoc--;
         }
     }
     //console.log("starts at ",text[cursorLoc-2]);
 
     var counter = 0;
-    for(var i = cursorLoc-2; i >= 0; i--){
+    for(var i = cursorLoc-1; i >= 0; i--) {
         if(text[i] === '\n')
             break;
         counter++;
@@ -5787,7 +5787,9 @@ firepad.Firepad = (function(global) {
 
     //console.log(text.split('\n'));
     //console.log("counter "+counter);
-    var line = text.substring(cursorLoc - counter - 1,cursorLoc);
+    console.log("counter "+ counter + " cursorLoc " + cursorLoc);
+    var line = ""
+    line = text.substring(cursorLoc - counter, cursorLoc);
     console.log("Line is "+ line);
     if(line == '\n'){
       console.log('newline check')
@@ -5798,102 +5800,31 @@ firepad.Firepad = (function(global) {
     };
     console.log(data);
     console.log(JSON.stringify(data));
-
+    let self = this;
    $.ajax({
         type: "POST",
         url: url,
         data: JSON.stringify(data),
         contentType: 'application/json',
-        success: function(dataRes) {
+        success: dataRes => {
             console.log("Success");
             console.log(dataRes);
             if(Object.keys(dataRes).length != 0){
               let startIndex = dataRes.startIndex;
               let endIndex = dataRes.endIndex;
               let IDList = dataRes.ids_and_blurbs;
-              /*
-console.log("Debugging");
-    console.log("key "+this.getExampleRef().key);
-    console.log("text "+this.getText());
-    console.log("html "+this.getHtml());
-    let testStart=startIndex;
-    let testEnd=endIndex;
-    let resStart=-1;
-    let resEnd=-1;
-    let myhtml=this.getHtml();
-    let mytext=this.getText();
-
-    let t_i=0;
-    let h_i=0;
-    for (; h_i<myhtml.length; h_i++){
-        if(t_i>=mytext.length){
-             console.log("Unexpected t_i ends!");
-             break;
-        }
-        if(myhtml[h_i]==='<'){
-            if (mytext[t_i]==='\n')
-                t_i+=1;
-            console.log("got <");
-            while (myhtml[h_i]!=='>'){
-                h_i+=1;
-                console.log("skipping til > "+myhtml[h_i]);
-            }
-        }
-        else if(myhtml[h_i]==='&'){
-            console.log("got &");
-            if(t_i<=testStart)
-                resStart=h_i;
-            if(t_i<=testEnd)
-                resEnd=h_i;
-            t_i+=1;
-            while (myhtml[h_i]!==';'){
-                h_i+=1;
-                console.log("skipping til ; "+myhtml[h_i]);
-            }
-        }
-        else{
-            if(t_i<=testStart)
-                resStart=h_i;
-            if(t_i<=testEnd)
-                resEnd=h_i;
-            if(myhtml[h_i]!==mytext[t_i]){
-                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
-            }
-            else {
-                t_i+=1;
-            }
-            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
-        }
-    }
-    console.log("Starting "+resStart);
-    console.log("Ending "+resEnd);
-    console.log("Total "+myhtml.substring(resStart,resEnd));
-
-    for (let i=resStart; i<resEnd; i++){
-        if(myhtml[i]==='<'){
-            resEnd=i;
-            break;
-        }
-    }
-    console.log("Total2 "+myhtml.substring(resStart,resEnd));
-    let newBegin=myhtml.substring(0,resStart);
-    let mid = myhtml.substring(resStart,resEnd);
-    let newEnd=myhtml.substring(resEnd,myhtml.length);
-    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
-    this.setHtml(res);
-    console.log("Result "+res);
-
-              */
-              // call highlightText(start, end)
               console.log("list" + IDList);
               let ID = IDList[0][0];
               let text_blurb = IDList[0][1];
+              let url = "https://www.google.com/";
               var ref = getExampleRef();
               var num;
               firebase.database().ref().child(ref.key + '/annotations').once("value")
                 .then( function(snapshot){
                   num = snapshot.numChildren() + 1;
-                  console.log("num" + num);
+                  self.annotator(text_blurb,num,url);
+
+                  self.richTextCodeMirror_.newline();
                   firebase.database().ref().child(ref.key + '/annotations/' + num)
                     .set({
                       id: ID,
@@ -5911,17 +5842,26 @@ console.log("Debugging");
                         let aside = document.getElementById('aside');
                         console.log(aside);
                         aside.innerHTML = "";
-                        console.log(obj.length)
-                        for (let i = 1; i < obj.length; i++) {
+                        for (let i = 1; i < obj.length; i++) {                                              
                           let textNode = document.createTextNode(
                             "" + i + ") " + obj[i]["blurb"]);
                           let pNode = document.createElement("P");
                           pNode.appendChild(textNode);
+
+                          let aNode = document.createElement('a');
+                          let url = "http://noteworthy.bitballoon.com/#/editor/" + obj[i]["id"];
+                          aNode.href = url;
+                          let linkTextNode = document.createTextNode("See document reference");
+                          aNode.appendChild(linkTextNode);
+
                           aside.appendChild(pNode);
+                          aside.appendChild(aNode);
                         }
                   });
               });
 
+            }else{
+                self.richTextCodeMirror_.newline();
             }
         }
     })
@@ -5986,79 +5926,18 @@ console.log("Debugging");
     this.makeDialog_('img', 'Insert image url');
   };
 
-//WKHERE
-  Firepad.prototype.debug = function() {
+  Firepad.prototype.annotate = function() {
     console.log("Debugging");
-    console.log("key "+this.getExampleRef().key);
-    console.log("text "+this.getText());
-    console.log("html "+this.getHtml());
-    let testStart=3;
-    let testEnd=6;
-    let resStart=-1;
-    let resEnd=-1;
-    let myhtml=this.getHtml();
-    let mytext=this.getText();
-
-    let t_i=0;
-    let h_i=0;
-    for (; h_i<myhtml.length; h_i++){
-        if(t_i>=mytext.length){
-             console.log("Unexpected t_i ends!");
-             break;
-        }
-        if(myhtml[h_i]==='<'){
-            if (mytext[t_i]==='\n')
-                t_i+=1;
-            console.log("got <");
-            while (myhtml[h_i]!=='>'){
-                h_i+=1;
-                console.log("skipping til > "+myhtml[h_i]);
-            }
-        }
-        else if(myhtml[h_i]==='&'){
-            console.log("got &");
-            if(t_i<=testStart)
-                resStart=h_i;
-            if(t_i<=testEnd)
-                resEnd=h_i;
-            t_i+=1;
-            while (myhtml[h_i]!==';'){
-                h_i+=1;
-                console.log("skipping til ; "+myhtml[h_i]);
-            }
-        }
-        else{
-            if(t_i<=testStart)
-                resStart=h_i;
-            if(t_i<=testEnd)
-                resEnd=h_i;
-            if(myhtml[h_i]!==mytext[t_i]){
-                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
-            }
-            else {
-                t_i+=1;
-            }
-            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
-        }
-    }
-    console.log("Starting "+resStart);
-    console.log("Ending "+resEnd);
-    console.log("Total "+myhtml.substring(resStart,resEnd));
-
-    for (let i=resStart; i<resEnd; i++){
-        if(myhtml[i]==='<'){
-            resEnd=i;
-            break;
-        }
-    }
-    console.log("Total2 "+myhtml.substring(resStart,resEnd));
-    let newBegin=myhtml.substring(0,resStart);
-    let mid = myhtml.substring(resStart,resEnd);
-    let newEnd=myhtml.substring(resEnd,myhtml.length);
-    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
-    this.setHtml(res);
-    console.log("Result "+res);
+    attributes={note:'testing me'};
+    this.insertEntity('button', attributes);
 }
+
+  Firepad.prototype.annotator = function(note,index,url) {
+    console.log("Debugging");
+    attributes={note:note,index:index,url:url};
+    this.insertEntity('button', attributes);
+  }
+
 
 
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
@@ -6118,7 +5997,7 @@ console.log("Debugging");
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
     this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
     this.toolbar.on('save', this.save, this);
-    this.toolbar.on('debug', this.debug, this);
+    this.toolbar.on('debug', this.annotate, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
