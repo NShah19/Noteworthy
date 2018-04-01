@@ -7,21 +7,7 @@
 }
 
 #firepad-back{
-    width:65%;
-    max-width:75%;
     height: 90vh;
-    margin: 2em;
-}
-
-#aside {
-    width: 35%;
-    min-width:25%;
-    max-height: 90vh;
-    overflow:scroll;
-    margin: 2em;
-    margin-top: 5em;
-    /* height: 70vh; */
-    /* overflow:scroll; */
 }
 
 #firepad-container{

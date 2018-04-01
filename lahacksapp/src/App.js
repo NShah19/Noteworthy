@@ -201,8 +201,9 @@ delete(index) {
     const postList = this.state.key.map((dataList, index) => {
         if(valid[index]) {
             console.log("Valid "+index);
-        return    <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
-                    {this.state.title[index]} <Label  style={{float:'right'}} onClick={() => this.delete(index)}>D</Label>  <Label style={{float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>
+        return   <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
+                   <div> <h4>{this.state.title[index]}  <Label style={{padding: '.3em .6em',float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>  </h4></div>
+                    <div><p>{this.state.date[index]}<Label  style={{padding: '.3em .6em', float:'right'}} onClick={() => this.delete(index)}>D</Label></p> </div>
                 </Menu.Item>
         }
         else {
@@ -242,8 +243,9 @@ delete(index) {
 //
                const postList = this.state.key.map((dataList, index) =>
                        <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
-                        {this.state.title[index]} <Label  style={{float:'right'}} onClick={() => this.delete(index)}>D</Label>  <Label style={{float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>
-                    </Menu.Item>
+                   <div> <h4>{this.state.title[index]}  <Label style={{padding: '.3em .6em',float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>  </h4></div>
+                    <div><p>{this.state.date[index]}<Label  style={{padding: '.3em .6em', float:'right'}} onClick={() => this.delete(index)}>D</Label></p> </div>
+                </Menu.Item>
                 );
 
                 this.setState({
@@ -357,7 +359,7 @@ class Folder extends Component {
 class Editor extends Component {
     render(){
         return  (
-             <Container align="center"  style={{ marginTop: '7em', width: '90%'}}>
+             <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
          <iframe align="center" style= {{ overflowX:'visible'}}  width='100%' height='600px' title="editor" src="./firepad/examples/richtext.html"></iframe>
         </Container>
         );
