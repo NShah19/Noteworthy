@@ -5786,6 +5786,7 @@ firepad.Firepad = (function(global) {
         success: function(dataRes) {
             console.log("Success");
             console.log(dataRes);
+            if(Object.keys(dataRes).length != 0){
             let parsedJSON = JSON.parse(dataRes);
             let startIndex = parsedJSON.startIndex;
             let endIndex = parsedJSON.endIndex;
@@ -5799,6 +5800,7 @@ firepad.Firepad = (function(global) {
                 // call function to make annotation
                 console.log(ID + " " + blurb);
             }
+        }
         }
     })
     this.richTextCodeMirror_.newline();
