@@ -5672,16 +5672,100 @@ firepad.Firepad = (function(global) {
     this.codeMirror_.focus();
   };
 
+
+  Firepad.prototype.getExampleRef = function() {
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+        var ref = firebase.database().ref();
+        var hash = window.location.hash.replace(/#/g, '');
+        if (hash) {
+            ref = ref.child(hash);
+        } else {
+            ref = ref.push(); // generate unique location.
+            window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+        }
+        if (typeof console !== 'undefined') {
+            console.log('Firebase data: ', ref.toString());
+        }
+        console.log(ref.key);
+        return ref;
+    }
+
   Firepad.prototype.newline = function() {
-    console.log("here newline");
-    let elements = this.getText();
-    console.log(elements);
+    console.log("here in newline");
+    let text = this.getText();
+    console.log(text);
+    var ref = this.getExampleRef();
+    var date = new Date();
+    console.log(ref);
+    console.log(date);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let nameInput = document.getElementById('namefield');
+    let title = nameInput.value;
+    console.log("Title "+title);
+
+    firebase.database().ref().child(ref.key + '/metadata').set({
+        name: title,
+        date: date.toDateString(),
+    });
+    console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
+
+    var counter = 0;
+    for(var i = text.length - 2; i >= 0; i--){
+        if(text[i] === "/n")
+            break;
+        counter++;
+    }
+    var line = text.substring(text.length - counter - 1);
+
+    console.log("Line is "+ line);
+     
+    console.log("ref key "+ref.key);
+
+    var data = {
+        doc_name: title,
+        doc_text: text,
+        doc_id: ref.key,
+        doc_date: date
+    };
+    console.log(JSON.stringify(data));
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+        /*   let response = dataRes;
+        var parsedJSON = JSON.parse(response);
+        var startIndex = parsedJSON.startIndex;
+        var endIndex = parsedJSON.endIndex;
+        var IDList = parsedJSON.ids_and_blurbs;
+
+        // call highlightText(start, end)
+
+        for (var i =0; i < IDList.length; i++){
+            var ID = IDList[i].id;
+            var blurb = IDList[i].blurb;
+            // call function to make annotation
+        }*/
+        }
+    })
+
+
    /* MYTODO
    $.ajax({
         type: "POST",
         url: url,
-        data: JSON.stringify(elements),
+        data: JSON.stringify(text),
         contentType: 'application/json',
         success: function(data) {
             console.log(data);
