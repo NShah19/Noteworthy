@@ -201,7 +201,7 @@ delete(index) {
     const postList = this.state.key.map((dataList, index) => {
         if(valid[index]) {
             console.log("Valid "+index);
-        return   <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
+        return    <Menu.Item key={index} active={this.state.activeItem === index} onMouseOver={() => this.showText(index)}>
                    <div> <h4>{this.state.title[index]}  <Label style={{padding: '.3em .6em',float:'right', opacity:'1'}}  ><Link to={'/editor/'+dataList} style={{opacity:'1'}}>G</Link></Label>  </h4></div>
                     <div><p>{this.state.date[index]}<Label  style={{padding: '.3em .6em', float:'right'}} onClick={() => this.delete(index)}>D</Label></p> </div>
                 </Menu.Item>
