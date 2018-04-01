@@ -5696,7 +5696,7 @@ firepad.Firepad = (function(global) {
 
   Firepad.prototype.save = function() {
     console.log("here in save");
-    let text = this.getText();
+    let text = this.getHtml();
     //console.log(text);
     var ref = this.getExampleRef();
     var date = new Date();
@@ -5750,7 +5750,7 @@ firepad.Firepad = (function(global) {
             text = text + bunchofNewLines + refText +'\n' + newText;
             console.log("INSIDE AJAX")
             console.log(fp);
-            fp.setText(text);
+            fp.setHtml(text); 
           }
     })
   }
