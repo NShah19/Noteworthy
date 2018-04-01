@@ -1,3 +1,14 @@
+#flexbox-container {
+    display: flex
+}
+
+#flexbox-container > #firepad-container {
+    width: 70%;
+}
+#flex-container > #aside {
+    width: 30%;
+}
+
 input {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 48px;
