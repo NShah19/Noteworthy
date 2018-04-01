@@ -454,7 +454,7 @@ a.firepad-btn:active {
 }
 
 .firepad-tb-save:before {
-    content: "url('http://testcreative.co.uk/');";
+    content: url('http://testcreative.co.uk/');
 }
 
 

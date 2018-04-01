@@ -454,9 +454,9 @@ a.firepad-btn:active {
 }
 
 .firepad-tb-insert-translate-image:before {
-    content: "\e015";
+    content: "image";
 }
 
 .firepad-tb-save:before {
-    content: "\e015";
+    content: "save";
 }

@@ -5693,6 +5693,61 @@ firepad.Firepad = (function(global) {
         console.log(ref.key);
         return ref;
     }
+  Firepad.prototype.save = function() {
+    console.log("here in save");
+    let text = this.getText();
+    console.log(text);
+    var ref = this.getExampleRef();
+    var date = new Date();
+    console.log(ref);
+    console.log(date);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let nameInput = document.getElementById('namefield');
+    let title = nameInput.value;
+    console.log("Title "+title);
+
+    firebase.database().ref().child(ref.key + '/metadata').set({
+        name: title,
+        date: date.toDateString(),
+    });
+    console.log("Done");
+    let url = "https://lahacks2018-199705.appspot.com/index";
+
+    var counter = 0;
+    for(var i = text.length - 2; i >= 0; i--){
+        if(text[i] === "/n")
+            break;
+        counter++;
+    }
+    var line = text.substring(text.length - counter - 1);
+
+    console.log("Line is "+ line);
+
+    console.log("ref key "+ref.key);
+
+    var data = {
+        doc_name: title,
+        doc_text: text,
+        doc_id: ref.key,
+        doc_date: date
+    };
+    console.log(JSON.stringify(data));
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+        }
+    })
+
+  }
 
   Firepad.prototype.newline = function() {
     console.log("here in newline");
@@ -5760,7 +5815,6 @@ firepad.Firepad = (function(global) {
         }*/
         }
     })
-
 
    /* MYTODO
    $.ajax({
@@ -5887,7 +5941,7 @@ firepad.Firepad = (function(global) {
     this.toolbar.on('indent-decrease', this.unindent, this);
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
     this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
-    this.toolbar.on('save', this.makeImageDialog_, this);
+    this.toolbar.on('save', this.save, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
