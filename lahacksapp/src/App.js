@@ -10,6 +10,8 @@ import * as firebase from 'firebase';
 import CodeMirror from 'codemirror';
 import Firepad from 'firepad';
 
+global.codeMirror=CodeMirror;
+
 const config = {
     apiKey: "AIzaSyBHvYqbcGu2MWc3NiIhsoEejfEKMo2rzl0",
     authDomain: "noteworthy-a7cc3.firebaseapp.com",
