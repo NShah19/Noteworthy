@@ -230,6 +230,10 @@
             writeTitleData("Untitled");
         }
 
+        function checkNull(){
+
+        }
+
         // Helper to get hash from end of URL or generate a random one.
         function getExampleRef() {
             var ref = firebase.database().ref();
@@ -250,7 +254,6 @@
         function writeTitleData(title) {
             var ref = getExampleRef();
             var date = new Date();
-            console.log(firepad.getHtml())
             firebase.database().ref().child(ref.key + '/metadata').set({
                 name: title,
                 date: date.toDateString(),

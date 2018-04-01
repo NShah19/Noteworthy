@@ -5760,7 +5760,6 @@ firepad.Firepad = (function(global) {
         }
     })
 
-
    /* MYTODO
    $.ajax({
         type: "POST",
