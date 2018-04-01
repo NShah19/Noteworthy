@@ -5740,7 +5740,6 @@ firepad.Firepad = (function(global) {
     })
 
   }
-
   Firepad.prototype.newline = function() {
     console.log("here in newline");
     let text = this.getText();
@@ -5787,22 +5786,31 @@ firepad.Firepad = (function(global) {
             console.log("Success");
             console.log(dataRes);
             if(Object.keys(dataRes).length != 0){
-            let parsedJSON = JSON.parse(dataRes);
-            let startIndex = parsedJSON.startIndex;
-            let endIndex = parsedJSON.endIndex;
-            let IDList = parsedJSON.ids_and_blurbs;
+              let parsedJSON = dataRes;
+              let startIndex = parsedJSON.startIndex;
+              let endIndex = parsedJSON.endIndex;
+              let IDList = parsedJSON.ids_and_blurbs;
 
-            // call highlightText(start, end)
-
-            for (let i =0; i < IDList.length; i++){
-                let ID = IDList[i][0];
-                let blurb = IDList[i][1];
-                // call function to make annotation
-                console.log(ID + " " + blurb);
+              // call highlightText(start, end)
+              console.log("list" + IDList);
+              let ID = IDList[0][0];
+              let text_blurb = IDList[0][1];
+              var ref = getExampleRef(); 
+              var num;
+              firebase.database().ref().child(ref.key + '/annotations').on("value", function(snapshot){
+                num = snapshot.numChildren() + 1;
+                console.log("num" + num);
+              })
+              firebase.database().ref().child(ref.key + '/annotations/' + num).set({
+                  id: ID,
+                  blurb: text_blurb,
+              });
+            // function to update annotations on sidebar
             }
         }
-        }
     })
+            
+            
     this.richTextCodeMirror_.newline();
   };
 
@@ -5862,16 +5870,79 @@ firepad.Firepad = (function(global) {
     this.makeDialog_('img', 'Insert image url');
   };
 
-
+//WKHERE
   Firepad.prototype.debug = function() {
     console.log("Debugging");
     console.log("key "+this.getExampleRef().key);
     console.log("text "+this.getText());
     console.log("html "+this.getHtml());
-    console.log("stripper " + this.getHtml().replace(/<(?:.|\n)*?>/gm, ''));
+    let testStart=3;
+    let testEnd=6;
+    let resStart=-1;
+    let resEnd=-1;
+    let myhtml=this.getHtml();
+    let mytext=this.getText();
 
-    //this.setHtml("<div><s>adsffadsfds</s></div><div>&nbsp;</div>")
-  };
+    let t_i=0;
+    let h_i=0;
+    for (; h_i<myhtml.length; h_i++){
+        if(t_i>=mytext.length){
+             console.log("Unexpected t_i ends!");
+             break;
+        }
+        if(myhtml[h_i]==='<'){
+            if (mytext[t_i]==='\n')
+                t_i+=1;
+            console.log("got <");
+            while (myhtml[h_i]!=='>'){
+                h_i+=1;
+                console.log("skipping til > "+myhtml[h_i]);
+            }
+        }
+        else if(myhtml[h_i]==='&'){
+            console.log("got &");
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            t_i+=1;
+            while (myhtml[h_i]!==';'){
+                h_i+=1;
+                console.log("skipping til ; "+myhtml[h_i]);
+            }
+        }
+        else{
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            if(myhtml[h_i]!==mytext[t_i]){
+                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
+            }
+            else {
+                t_i+=1;
+            }
+            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
+        }
+    }
+    console.log("Starting "+resStart);
+    console.log("Ending "+resEnd);
+    console.log("Total "+myhtml.substring(resStart,resEnd));
+
+    for (let i=resStart; i<resEnd; i++){
+        if(myhtml[i]==='<'){
+            resEnd=i;
+            break;
+        }
+    }
+    console.log("Total2 "+myhtml.substring(resStart,resEnd));
+    let newBegin=myhtml.substring(0,resStart);
+    let mid = myhtml.substring(resStart,resEnd);
+    let newEnd=myhtml.substring(resEnd,myhtml.length);
+    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
+    this.setHtml(res);
+    console.log("Result "+res);
+}
 
 
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
