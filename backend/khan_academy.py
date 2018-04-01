@@ -1,9 +1,12 @@
 import requests
 from API_keys import *
 
+import requests_toolbelt.adapters.appengine
+requests_toolbelt.adapters.appengine.monkeypatch()
+
 # Uses YT to search Khan Academy
-BASE_URL = "https://www.googleapis.com/youtube/v3/search"
 def search_KA(query):
+    BASE_URL = "https://www.googleapis.com/youtube/v3/search"
     keys = {
         "part": "snippet",
         "q": "Khan Academy " + query,
