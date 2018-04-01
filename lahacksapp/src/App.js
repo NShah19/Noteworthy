@@ -157,7 +157,7 @@ class Folder extends Component {
              <div>
               <Container text style={{ marginTop: '7em'}}>
              <NotesList/>
-              <p style={{ marginTop: '7em'}}>afdsffsadfads notes here</p>
+              <p style={{ marginTop: '7em'}}>Notes go here</p>
           </Container>
            </div>
             );
