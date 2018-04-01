@@ -5799,15 +5799,37 @@ firepad.Firepad = (function(global) {
               let text_blurb = IDList[0][1];
               var ref = getExampleRef(); 
               var num;
-              firebase.database().ref().child(ref.key + '/annotations').on("value", function(snapshot){
-                num = snapshot.numChildren() + 1;
-                console.log("num" + num);
-              })
-              firebase.database().ref().child(ref.key + '/annotations/' + num).set({
-                  id: ID,
-                  blurb: text_blurb,
+              firebase.database().ref().child(ref.key + '/annotations').once("value")
+                .then( function(snapshot){
+                  num = snapshot.numChildren() + 1;
+                  console.log("num" + num);
+                  firebase.database().ref().child(ref.key + '/annotations/' + num)
+                    .set({
+                      id: ID,
+                      blurb: text_blurb,
+                    });
+                  var aside = document.getElementById('aside');
+
+                  firebase.database().ref().child(ref.key + '/annotations')
+                    .once("value").then( data => {
+                        console.log(data);
+                        obj = data.val();
+                        console.log(obj);
+
+                        // let keys = Object.keys(obj);
+                        let aside = document.getElementById('aside');
+                        console.log(aside);
+                        aside.innerHTML = "";
+                        for (let i = 1; i < obj.length; i++) {
+                          let textNode = document.createTextNode(
+                            "" + i + ") " + obj[i]["blurb"]);
+                          let pNode = document.createElement("P");
+                          pNode.appendChild(textNode);
+                          aside.appendChild(pNode);
+                        }
+                  });
               });
-            // function to update annotations on sidebar
+              
             }
         }
     })
