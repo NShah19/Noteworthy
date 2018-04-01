@@ -1739,7 +1739,7 @@ firepad.RichTextToolbar = (function(global) {
 
   utils.makeEventEmitter(RichTextToolbar, ['bold', 'italic', 'underline', 'strike', 'font', 'font-size', 'color',
     'left', 'center', 'right', 'unordered-list', 'ordered-list', 'todo-list', 'indent-increase', 'indent-decrease',
-                                           'undo', 'redo', 'insert-image', 'insert-translate-image','save']);
+                                           'undo', 'redo', 'insert-image', 'insert-translate-image','save','debug']);
 
   RichTextToolbar.prototype.element = function() { return this.element_; };
 
@@ -1773,6 +1773,7 @@ firepad.RichTextToolbar = (function(global) {
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-image')], { 'class': 'firepad-btn-group' }));
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-translate-image')], { 'class': 'firepad-btn-group' }));
       toolbarOptions.push(utils.elt('div', [self.makeButton_('save')], { 'class': 'firepad-btn-group' }));
+      toolbarOptions.push(utils.elt('div', [self.makeButton_('debug')], { 'class': 'firepad-btn-group' }));
     }
 
     var toolbarWrapper = utils.elt('div', toolbarOptions, { 'class': 'firepad-toolbar-wrapper' });
@@ -5830,6 +5831,16 @@ firepad.Firepad = (function(global) {
     this.makeDialog_('img', 'Insert image url');
   };
 
+
+  Firepad.prototype.debug = function() {
+    console.log("Debugging");
+    console.log(this.getText());
+    console.log(this.getHtml());
+
+    this.setHtml("<div><s>adsffadsfds</s></i></b></div><div>&nbsp;</div>")
+  };
+
+
   Firepad.prototype.makeDialog_ = function(id, placeholder) {
    var self = this;
 
@@ -5886,7 +5897,8 @@ firepad.Firepad = (function(global) {
     this.toolbar.on('indent-decrease', this.unindent, this);
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
     this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
-    this.toolbar.on('save', this.makeImageDialog_, this);
+    this.toolbar.on('save', this.save, this);
+    this.toolbar.on('debug', this.debug, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
