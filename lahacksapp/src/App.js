@@ -6,6 +6,21 @@ import {Container, Header, Image, List, Menu, Segment,
   Icon} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import * as firebase from 'firebase';
+import CodeMirror from 'codemirror';
+import Firepad from 'firepad';
+
+const config = {
+    apiKey: "AIzaSyBHvYqbcGu2MWc3NiIhsoEejfEKMo2rzl0",
+    authDomain: "noteworthy-a7cc3.firebaseapp.com",
+    databaseURL: "https://noteworthy-a7cc3.firebaseio.com",
+    projectId: "noteworthy-a7cc3",
+    storageBucket: "noteworthy-a7cc3.appspot.com",
+    messagingSenderId: "501950428377",
+};
+
+let fb=firebase.initializeApp(config)
+
 
 const HomepageHeading = ({ mobile }) => (
    <Menu inverted style={{
@@ -48,34 +63,107 @@ const HomepageHeading = ({ mobile }) => (
 )
 
 
-class NotesList extends Component {
-  state = { activeItem: 'inbox' }
+const NotespageHeading = ({ mobile }) => (
+   <Menu inverted style={{
+    background: 'linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url("notebooks.jpg")'
+   }}>
+   <Container text >
+    <div><Header
+      as='h1'
+      content='The Notes Collection'
+      inverted
+      style={{
+        fontSize: mobile ? '2em' : '4em',
+        fontWeight: 'normal',
+        marginBottom: 0,
+        marginTop: '2em',
+      }}
+    />
+    <Header
+      as='h2'
+      content="Find a past note to work with."
+      inverted
+      style={{
+        fontSize: mobile ? '1.5em' : '1.7em',
+        fontWeight: 'normal',
+        marginTop: mobile ? '0.5em' : '1.5em',
+        marginBottom: mobile ? '1.5em' : '1.5em'
+      }}
+    />
+    </div>
+  </Container>
+  </Menu>
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+)
+
+
+class NotesList extends Component {
+
+constructor(props){
+super(props);
+this.state = {
+        title: [],
+        key: [],
+        data: [],
+        post: '',
+        activeItem: ''
+    };
+}
+//todo
+  handleItemClick = (e, { key }) => this.setState({ activeItem: key })
+
+  componentDidMount(){
+
+    const rootRef = fb.database().ref();
+    const post = rootRef.orderByKey();
+
+
+   post.once('value', snap => {
+       snap.forEach(child => {
+            let childRef = firebase.database().ref('/'+child.key);
+            let codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
+            let firepad = Firepad.fromCodeMirror(childRef, codeMirror, {
+                richTextShortcuts: false,
+                richTextToolbar: false
+              });
+
+            console.log('text!: '+firepad.getText());
+
+            childRef.once('value', snapshot => {
+                let name= snapshot.child('metadata/name').val();
+
+                console.log(child.key + " "+name);
+
+                this.setState({
+                   key: this.state.key.concat([child.key]),
+                   title: this.state.title.concat([name])
+                });
+//
+               const postList = this.state.key.map((dataList, index) =>
+                  <Link to={'/editor/'+dataList} >
+                  <Menu.Item key={index} active={this.state.activeItem === index} onClick={this.handleItemClick}>
+                        {this.state.title[index]}
+
+                    </Menu.Item></Link>
+
+                );
+
+                this.setState({
+                    post: postList
+                });
+            });
+        });
+    });
+}
+
 
   render() {
-    const { activeItem } = this.state
 
     return (
-      <Menu vertical>
-        <Menu.Item name='one' active={activeItem === 'one'} onClick={this.handleItemClick}>
-          <Label color='teal'>label</Label>
-          Inbox
-        </Menu.Item>
-
-        <Menu.Item name='two' active={activeItem === 'two'} onClick={this.handleItemClick}>
-          <Label>label</Label>
-          Spam
-        </Menu.Item>
-
-        <Menu.Item name='three' active={activeItem === 'three'} onClick={this.handleItemClick}>
-          <Label>label </Label>
-          Updates
-        </Menu.Item>
-        <Menu.Item>
-          <Input icon='search' placeholder='go to...' />
-        </Menu.Item>
-      </Menu>
+        <div>
+        <div id="firepad"></div>
+        <Menu vertical>{this.state.post}</Menu>
+      </div>
     )
   }
 }
@@ -157,7 +245,6 @@ class Folder extends Component {
              <div>
               <Container text style={{ marginTop: '7em'}}>
              <NotesList/>
-              <p style={{ marginTop: '7em'}}>afdsffsadfads notes here</p>
           </Container>
            </div>
             );
@@ -174,14 +261,35 @@ class Editor extends Component {
     }
 }
 
+class Editor2 extends Component {
+    constructor(props){
+        super(props);
+    }
+    render(){
+        let url="./firepad/examples/richtext.html#"+this.props.match.params.id;
+        console.log(url);
+        return  (
+        <Container align="center"  style={{ marginTop: '7em', width: '70%'}}>
+         <iframe align="center" style= {{ overflow:'visible'}}  width='100%' height='600px' title="editor" src={url}></iframe>
+        </Container>
+        );
+    }
+}
+
+
+
 class App extends React.Component {
  render(){
      return <Router><Switch>
-      <Route path='/editor' render={() => <PageLayout><Editor/></PageLayout> }/>
-      <Route path='/folder' render={() => <PageLayout><Folder/></PageLayout> }/>
+      <Route exact path='/editor' render={() => <PageLayout><Editor/></PageLayout> }/>
+      <Route path='/editor/:id' render={(props) => <PageLayout><Editor2 {...props}/></PageLayout> }/>
+      <Route path='/folder' render={() => <PageLayout><div><NotespageHeading/><Folder/></div></PageLayout> }/>
      <Route exact path='/' render={() => <PageLayout><div><HomepageHeading/><HomeLayout/></div></PageLayout> }/>
    </Switch></Router>
  }
 }
 
 export default App;
+
+
+

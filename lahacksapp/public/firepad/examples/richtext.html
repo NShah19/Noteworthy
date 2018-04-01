@@ -209,8 +209,8 @@
         function restoreValue(id) {
             console.log('id'+id)
             var name;
-            var dbref = firebase.database().ref('/'+id)
-            dbref.on('value', function(snapshot){
+
+            firebase.database().ref('/'+id).once('value').then(function(snapshot) {
                 name = snapshot.child('metadata/name').val();
                 //console.log('found name ' + name)
                 if(name == undefined){
