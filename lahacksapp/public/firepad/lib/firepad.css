@@ -2,19 +2,20 @@
     display: flex;
     justify-content: space-around;
     align-items:flex-start;
-    width:90%;
+    width:100%;
     margin:auto;
 }
 
 #firepad-back{
-    width:75vw;
+    width:65%;
+    max-width:75%;
     height: 90vh;
     margin: 2em;
 }
 
 #aside {
-    height: 90vh;
-    width: 25vw;
+    width: 35%;
+    min-width:25%;
     max-height: 90vh;
     overflow:scroll;
     margin: 2em;

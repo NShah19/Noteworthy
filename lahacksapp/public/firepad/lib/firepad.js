@@ -5792,12 +5792,84 @@ firepad.Firepad = (function(global) {
               let startIndex = dataRes.startIndex;
               let endIndex = dataRes.endIndex;
               let IDList = dataRes.ids_and_blurbs;
+              /*
+console.log("Debugging");
+    console.log("key "+this.getExampleRef().key);
+    console.log("text "+this.getText());
+    console.log("html "+this.getHtml());
+    let testStart=startIndex;
+    let testEnd=endIndex;
+    let resStart=-1;
+    let resEnd=-1;
+    let myhtml=this.getHtml();
+    let mytext=this.getText();
 
+    let t_i=0;
+    let h_i=0;
+    for (; h_i<myhtml.length; h_i++){
+        if(t_i>=mytext.length){
+             console.log("Unexpected t_i ends!");
+             break;
+        }
+        if(myhtml[h_i]==='<'){
+            if (mytext[t_i]==='\n')
+                t_i+=1;
+            console.log("got <");
+            while (myhtml[h_i]!=='>'){
+                h_i+=1;
+                console.log("skipping til > "+myhtml[h_i]);
+            }
+        }
+        else if(myhtml[h_i]==='&'){
+            console.log("got &");
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            t_i+=1;
+            while (myhtml[h_i]!==';'){
+                h_i+=1;
+                console.log("skipping til ; "+myhtml[h_i]);
+            }
+        }
+        else{
+            if(t_i<=testStart)
+                resStart=h_i;
+            if(t_i<=testEnd)
+                resEnd=h_i;
+            if(myhtml[h_i]!==mytext[t_i]){
+                console.log("Unexpected inequality! "+myhtml[h_i]+" "+mytext[t_i]);
+            }
+            else {
+                t_i+=1;
+            }
+            console.log("compare "+myhtml[h_i]+" "+mytext[t_i]);
+        }
+    }
+    console.log("Starting "+resStart);
+    console.log("Ending "+resEnd);
+    console.log("Total "+myhtml.substring(resStart,resEnd));
+
+    for (let i=resStart; i<resEnd; i++){
+        if(myhtml[i]==='<'){
+            resEnd=i;
+            break;
+        }
+    }
+    console.log("Total2 "+myhtml.substring(resStart,resEnd));
+    let newBegin=myhtml.substring(0,resStart);
+    let mid = myhtml.substring(resStart,resEnd);
+    let newEnd=myhtml.substring(resEnd,myhtml.length);
+    let res = newBegin + "<button style='color: orange;'>"+mid + "</button>"+newEnd;
+    this.setHtml(res);
+    console.log("Result "+res);
+
+              */
               // call highlightText(start, end)
               console.log("list" + IDList);
               let ID = IDList[0][0];
               let text_blurb = IDList[0][1];
-              var ref = getExampleRef(); 
+              var ref = getExampleRef();
               var num;
               firebase.database().ref().child(ref.key + '/annotations').once("value")
                 .then( function(snapshot){
@@ -5829,12 +5901,12 @@ firepad.Firepad = (function(global) {
                         }
                   });
               });
-              
+
             }
         }
     })
-            
-            
+
+
     this.richTextCodeMirror_.newline();
   };
 
