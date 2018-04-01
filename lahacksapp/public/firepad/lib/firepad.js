@@ -5756,14 +5756,14 @@ firepad.Firepad = (function(global) {
     //console.log("Cursor! ",this.codeMirror_.indexFromPos(this.codeMirror_.getCursor()));
 
     for(var i = 0; i < cursorLoc; i++){
-        if(text[i] === '\n'){
+        if(text[i] === '\n') {
             cursorLoc--;
         }
     }
     //console.log("starts at ",text[cursorLoc-2]);
 
     var counter = 0;
-    for(var i = cursorLoc-2; i >= 0; i--){
+    for(var i = cursorLoc-1; i >= 0; i--) {
         if(text[i] === '\n')
             break;
         counter++;
@@ -5771,7 +5771,9 @@ firepad.Firepad = (function(global) {
 
     //console.log(text.split('\n'));
     //console.log("counter "+counter);
-    var line = text.substring(cursorLoc - counter - 1,cursorLoc);
+    console.log("counter "+ counter + " cursorLoc " + cursorLoc);
+    var line = ""
+    line = text.substring(cursorLoc - counter, cursorLoc);
     console.log("Line is "+ line);
 
     let data={
