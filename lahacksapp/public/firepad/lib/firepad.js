@@ -5695,21 +5695,21 @@ firepad.Firepad = (function(global) {
         return ref;
     }
 
-  Firepad.prototype.newline = function() {
-    console.log("here in newline");
+  Firepad.prototype.save = function() {
+    console.log("here in save");
     let text = this.getText();
-    console.log(text);
+    //console.log(text);
     var ref = this.getExampleRef();
     var date = new Date();
-    console.log(ref);
-    console.log(date);
+    //console.log(ref);
+    //console.log(date);
     if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
         firebase = require('firebase');
       }
 
     let nameInput = document.getElementById('namefield');
     let title = nameInput.value;
-    console.log("Title "+title);
+    //console.log("Title "+title);
 
     firebase.database().ref().child(ref.key + '/metadata').set({
         name: title,
@@ -5717,16 +5717,6 @@ firepad.Firepad = (function(global) {
     });
     console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
-
-    var counter = 0;
-    for(var i = text.length - 2; i >= 0; i--){
-        if(text[i] === "/n")
-            break;
-        counter++;
-    }
-    var line = text.substring(text.length - counter - 1);
-
-    console.log("Line is "+ line);
 
     console.log("ref key "+ref.key);
 
@@ -5746,32 +5736,71 @@ firepad.Firepad = (function(global) {
         success: function(dataRes) {
             console.log("Success");
             console.log(dataRes);
-        /*   let response = dataRes;
-        var parsedJSON = JSON.parse(response);
-        var startIndex = parsedJSON.startIndex;
-        var endIndex = parsedJSON.endIndex;
-        var IDList = parsedJSON.ids_and_blurbs;
-
-        // call highlightText(start, end)
-
-        for (var i =0; i < IDList.length; i++){
-            var ID = IDList[i].id;
-            var blurb = IDList[i].blurb;
-            // call function to make annotation
-        }*/
         }
     })
 
-   /* MYTODO
+  }
+
+  Firepad.prototype.newline = function() {
+    console.log("here in newline");
+    let text = this.getText();
+    //console.log(text);
+    if (window.firebase === undefined && typeof require === 'function' && typeof Firebase !== 'function') {
+        firebase = require('firebase');
+      }
+
+    let url = "https://lahacks2018-199705.appspot.com/query";
+    cursorLoc=this.codeMirror_.indexFromPos(this.codeMirror_.getCursor());
+    //console.log("Cursor! ",this.codeMirror_.indexFromPos(this.codeMirror_.getCursor()));
+
+    for(var i = 0; i < cursorLoc; i++){
+        if(text[i] === '\n'){
+            cursorLoc--;
+        }
+    }
+    //console.log("starts at ",text[cursorLoc-2]);
+
+    var counter = 0;
+    for(var i = cursorLoc-2; i >= 0; i--){
+        if(text[i] === '\n')
+            break;
+        counter++;
+    }
+
+    //console.log(text.split('\n'));
+    //console.log("counter "+counter);
+    var line = text.substring(cursorLoc - counter - 1,cursorLoc);
+    console.log("Line is "+ line);
+
+    let data={
+        line: line
+    };
+    console.log(data);
+    console.log(JSON.stringify(data));
+
    $.ajax({
         type: "POST",
         url: url,
-        data: JSON.stringify(text),
+        data: JSON.stringify(data),
         contentType: 'application/json',
-        success: function(data) {
-            console.log(data);
+        success: function(dataRes) {
+            console.log("Success");
+            console.log(dataRes);
+            let parsedJSON = JSON.parse(dataRes);
+            let startIndex = parsedJSON.startIndex;
+            let endIndex = parsedJSON.endIndex;
+            let IDList = parsedJSON.ids_and_blurbs;
+
+            // call highlightText(start, end)
+
+            for (let i =0; i < IDList.length; i++){
+                let ID = IDList[i][0];
+                let blurb = IDList[i][1];
+                // call function to make annotation
+                console.log(ID + " " + blurb);
+            }
         }
-    })*/
+    })
     this.richTextCodeMirror_.newline();
   };
 
