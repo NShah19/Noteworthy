@@ -4,34 +4,22 @@
   <title>Noteworthy</title>
   <link rel="stylesheet" href="beauty.css">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
 </head>
   <body>
     <div id="title-wrapper">
       <h1>NQtainment</h1>
     </div>
-    <div class="wrapper">
-      <div id="player"></div>
-     
-      <div id="mainDiv">
-        <div id="curDiv">
-          <h2>CURRENTLY PLAYING</h2>
-          <h3 id="current"></h3>
-	      </div>
-	      <div id="queueDiv">
-          <h2>UP NEXT</h2>
-          <ul id="queue"></ul>
-	      </div>
-      </div>
-    </div>
-    <div id="btn-wrapper">
-      <button id="btn" type="button" onclick="playNextSong()">Play Next Song</button>
+    <div id="mainDiv">
+      <ul class="md-2-fds" id="files_list"></ul>
     </div>
 
     <div> 
-      <p>© NQtainment 2017. All rights reserved.</p>
+      <p>© Noteworthy 2018. All rights reserved.</p>
     </div>
 
-    <script type="text/javascript" src="./videoPlay.js"></script>
+    <script type="text/javascript" src="./root.js"></script>
   </body>
 </html>
