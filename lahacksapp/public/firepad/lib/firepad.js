@@ -5834,7 +5834,12 @@ firepad.Firepad = (function(global) {
 
   Firepad.prototype.debug = function() {
     console.log("Debugging");
-    this.setHtml("<div><s>adsffadsfds</s></i></b></div><div>&nbsp;</div>")
+    console.log("key "+this.getExampleRef().key);
+    console.log("text "+this.getText());
+    console.log("html "+this.getHtml());
+    console.log("stripper " + this.getHtml().replace(/<(?:.|\n)*?>/gm, ''));
+
+    //this.setHtml("<div><s>adsffadsfds</s></div><div>&nbsp;</div>")
   };
 
 

@@ -209,7 +209,7 @@
             var dbref = firebase.database().ref('/'+id)
             dbref.on('value', function(snapshot){
                 name = snapshot.child('metadata/name').val();
-                console.log('found name ' + name)
+                //console.log('found name ' + name)
                 if(name == undefined){
                     document.getElementById('namefield').value = "Untitled";
                 }
