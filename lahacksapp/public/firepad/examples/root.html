@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Noteworthy</title>
+  <link rel="stylesheet" href="beauty.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+</head>
+  <body>
+    <div id="title-wrapper">
+      <h1>NQtainment</h1>
+    </div>
+    <div class="wrapper">
+      <div id="player"></div>
+     
+      <div id="mainDiv">
+        <div id="curDiv">
+          <h2>CURRENTLY PLAYING</h2>
+          <h3 id="current"></h3>
+	      </div>
+	      <div id="queueDiv">
+          <h2>UP NEXT</h2>
+          <ul id="queue"></ul>
+	      </div>
+      </div>
+    </div>
+    <div id="btn-wrapper">
+      <button id="btn" type="button" onclick="playNextSong()">Play Next Song</button>
+    </div>
+
+    <div> 
+      <p>© NQtainment 2017. All rights reserved.</p>
+    </div>
+
+    <script type="text/javascript" src="./videoPlay.js"></script>
+  </body>
+</html>
