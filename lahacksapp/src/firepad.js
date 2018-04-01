@@ -1739,7 +1739,7 @@ firepad.RichTextToolbar = (function(global) {
 
   utils.makeEventEmitter(RichTextToolbar, ['bold', 'italic', 'underline', 'strike', 'font', 'font-size', 'color',
     'left', 'center', 'right', 'unordered-list', 'ordered-list', 'todo-list', 'indent-increase', 'indent-decrease',
-                                           'undo', 'redo', 'insert-image', 'insert-translate-image','save']);
+                                           'undo', 'redo', 'insert-image', 'insert-translate-image']);
 
   RichTextToolbar.prototype.element = function() { return this.element_; };
 
@@ -1772,7 +1772,6 @@ firepad.RichTextToolbar = (function(global) {
     if (self.imageInsertionUI) {
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-image')], { 'class': 'firepad-btn-group' }));
       toolbarOptions.push(utils.elt('div', [self.makeButton_('insert-translate-image')], { 'class': 'firepad-btn-group' }));
-      toolbarOptions.push(utils.elt('div', [self.makeButton_('save')], { 'class': 'firepad-btn-group' }));
     }
 
     var toolbarWrapper = utils.elt('div', toolbarOptions, { 'class': 'firepad-toolbar-wrapper' });
@@ -5717,20 +5716,20 @@ firepad.Firepad = (function(global) {
     console.log("Done");
     let url = "https://lahacks2018-199705.appspot.com/index";
 
-    var counter = 0;
+    /*var counter = 0;
     for(var i = text.length - 2; i >= 0; i--){
         if(text[i] === "/n")
             break;
         counter++;
     }
-    var line = text.substring(text.length - counter - 1);
+    var line = text.substring(text.length - counter);
 
-    console.log("Line is "+ line);
-
+    console.log("Line is "+line);
+     */
     console.log("ref key "+ref.key);
 
     var data = {
-        doc_name: title,
+       doc_name: title,
         doc_text: text,
         doc_id: ref.key,
         doc_date: date
@@ -5887,7 +5886,6 @@ firepad.Firepad = (function(global) {
     this.toolbar.on('indent-decrease', this.unindent, this);
     this.toolbar.on('insert-image', this.makeImageDialog_, this);
     this.toolbar.on('insert-translate-image', this.makeImageDialog_, this);
-    this.toolbar.on('save', this.makeImageDialog_, this);
     this.firepadWrapper_.insertBefore(this.toolbar.element(), this.firepadWrapper_.firstChild);
   };
 
